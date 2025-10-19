@@ -23,20 +23,9 @@ jobs:
             java-vendor: temurin
             version: ${{ needs.generate-vars.outputs.version }}
 
-    check-local-changes:
-        name: Check local changes
-        needs: generate-vars
-        if: success()
-        uses: ApexStudios-Dev/.github/.github/workflows/_check-local-changes.yml@master
-        secrets: inherit
-        with:
-            java-version: 21
-            java-vendor: temurin
-            version: ${{ needs.generate-vars.outputs.version }}
-
     publish-maven:
         name: Publish Maven
-        needs: [ generate-vars, build, check-local-changes ]
+        needs: [ generate-vars, build ]
         if: success()
         uses: ApexStudios-Dev/.github/.github/workflows/_publish-maven.yml@master
         secrets: inherit
