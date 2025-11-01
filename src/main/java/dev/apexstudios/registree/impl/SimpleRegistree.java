@@ -70,7 +70,7 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import org.apache.commons.lang3.function.Consumers;
 import org.jetbrains.annotations.Nullable;
-
+// testing
 public class SimpleRegistree implements Registree {
     protected final String namespace;
 
