@@ -5,7 +5,7 @@ plugins {
 
 group = "dev.apexstudios"
 
-apex.neoVersion("21.10.20-beta", "1.21.9", "2025.10.05")
+apex.neoVersion("21.10.41-beta", "2025.10.12")
 apex.extendCompilerErrors()
 
 tasks.withType<Jar> {
