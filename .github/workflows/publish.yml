@@ -16,3 +16,4 @@ jobs:
       publish-task: ':publishReleasePublicationToApexStudios-ReleasesRepository'
       display-name: Registree
       color: 0xeb052f
+      use-self-runner: false
