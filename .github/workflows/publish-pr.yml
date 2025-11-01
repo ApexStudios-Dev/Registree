@@ -30,7 +30,7 @@ jobs:
       java-version: 21
       java-vendor: temurin
       version: ${{ needs.generate-vars.outputs.version }}
-      artifact-base-path: dev/apexstudios/registree/
+      artifacts-base-path: dev/apexstudios/registree/
       uploader-workflow-name: 'Test PR'
     secrets:
       PR_PUBLISHING_GH_APP_ID: ${{ secrets.PR_PUBLISHING_GH_APP_ID }}
