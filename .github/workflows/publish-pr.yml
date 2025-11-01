@@ -1,0 +1,37 @@
+name: Publish PRs to GitHub Packages
+
+on:
+  workflow_run:
+    workflows: [ 'Test PR' ]
+    types: [ completed ]
+  issue_comment:
+    types: [ edited ]
+#  pull_request_target:
+  pull_request:
+    types: [ opened ]
+
+permissions:
+  packages: write
+  actions: write
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  generate-vars:
+    name: Generate Vars
+    uses: ApexStudios-Dev/.github/.github/workflows/_generate-vars.yml@master
+    secrets: inherit
+
+  publish-pr:
+    needs: [ generate-vars ]
+    uses: ApexStudios-Dev/.github/.github/workflows/_publish-pr.yml@master
+    with:
+      java-version: 21
+      java-vendor: temurin
+      version: ${{ needs.generate-vars.outputs.version }}
+      artifacts-base-path: dev/apexstudios/registree/
+      uploader-workflow-name: 'Test PR'
+    secrets:
+      PR_PUBLISHING_GH_APP_ID: ${{ secrets.PR_PUBLISHING_GH_APP_ID }}
+      PR_PUBLISHING_GH_APP_KEY: ${{ secrets.PR_PUBLISHING_GH_APP_KEY }}
