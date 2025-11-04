@@ -20,5 +20,3 @@ jobs:
   publish-pr:
     uses: ApexStudios-Dev/.github/.github/workflows/_publish-pr.yml@master
     secrets: inherit
-    with:
-      artifacts-base-path: dev/apexstudios/registree/
