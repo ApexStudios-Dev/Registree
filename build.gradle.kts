@@ -5,7 +5,7 @@ plugins {
 
 group = "dev.apexstudios"
 
-apex.neoVersion("21.11.0-alpha.25w45a.20251119.234730", "1.21.10", "2025.10.12")
+apex.neoVersion("21.11.0-alpha.1.21.11-pre1.20251120.181430", "1.21.10", "2025.10.12")
 apex.extendCompilerErrors()
 
 repositories {
