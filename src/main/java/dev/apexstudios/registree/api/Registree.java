@@ -1,5 +1,9 @@
 package dev.apexstudios.registree.api;
 
+import com.mojang.brigadier.Command;
+import com.mojang.brigadier.arguments.ArgumentType;
+import com.mojang.brigadier.arguments.BoolArgumentType;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.Lifecycle;
 import com.mojang.serialization.MapCodec;
@@ -10,6 +14,7 @@ import dev.apexstudios.registree.api.holder.DeferredDataComponent;
 import dev.apexstudios.registree.api.holder.DeferredEntity;
 import dev.apexstudios.registree.api.holder.DeferredFluid;
 import dev.apexstudios.registree.api.holder.DeferredFluidType;
+import dev.apexstudios.registree.api.holder.DeferredGameRule;
 import dev.apexstudios.registree.api.holder.DeferredItem;
 import dev.apexstudios.registree.api.holder.DeferredMenu;
 import dev.apexstudios.registree.api.holder.DeferredParticleType;
@@ -18,11 +23,11 @@ import dev.apexstudios.registree.impl.SimpleRegistree;
 import dev.apexstudios.registree.impl.type.SimpleRecipeSerializer;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.function.ToIntFunction;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -43,9 +48,8 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -62,11 +66,15 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.gamerules.GameRule;
+import net.minecraft.world.level.gamerules.GameRuleCategory;
+import net.minecraft.world.level.gamerules.GameRuleType;
+import net.minecraft.world.level.gamerules.GameRuleTypeVisitor;
+import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.fluids.FluidType;
@@ -93,12 +101,12 @@ public interface Registree {
 
     /// {@return Registry identifier matching the following format `[namespace]:[registryName]`}
     default String registryIdentifier(String registryName) {
-        return namespace() + ResourceLocation.NAMESPACE_SEPARATOR + registryName;
+        return namespace() + Identifier.NAMESPACE_SEPARATOR + registryName;
     }
 
     /// {@return Registry name matching the following format `[namespace]:[registryName]`}
-    default ResourceLocation registryName(String registryName) {
-        return ResourceLocation.fromNamespaceAndPath(namespace(), registryName);
+    default Identifier registryName(String registryName) {
+        return Identifier.fromNamespaceAndPath(namespace(), registryName);
     }
 
     /// {@return Registry key of the given registry type matching the following format `[namespace]:[registryName]`}
@@ -120,7 +128,7 @@ public interface Registree {
 
     /// {@return Holder matching the given registry name}
     default <TRegistry> Holder.Reference<TRegistry> getOrThrow(ResourceKey<? extends Registry<TRegistry>> registryType, String registryName) {
-        return get(registryType, registryName).orElseThrow(() -> new NoSuchElementException("Missing key in '" + registryType.location() + "': '" + namespace() + ':' + registryName + "'"));
+        return get(registryType, registryName).orElseThrow(() -> new NoSuchElementException("Missing key in '" + registryType.identifier() + "': '" + namespace() + ':' + registryName + "'"));
     }
 
     /// {@return Registered value matching the given registry name or null}
@@ -184,7 +192,7 @@ public interface Registree {
 
             @Override
             public Optional<Holder.Reference<TRegistry>> get(ResourceKey<TRegistry> registryKey) {
-                return registryKey.isFor(registryType) && registryKey.location().getNamespace().equals(namespace()) ? Registree.this.get(registryType, registryKey.location().getPath()) : Optional.empty();
+                return registryKey.isFor(registryType) && registryKey.identifier().getNamespace().equals(namespace()) ? Registree.this.get(registryType, registryKey.identifier().getPath()) : Optional.empty();
             }
 
             @Override
@@ -205,7 +213,7 @@ public interface Registree {
     /// Enqueues a new registration for the given registry type, name and factory
     ///
     /// @return {@link ResourceKey} pointing towards the queued registration
-    <TRegistry> ResourceKey<TRegistry> register(ResourceKey<? extends Registry<TRegistry>> registryType, String registryName, Function<ResourceLocation, ? extends TRegistry> factory);
+    <TRegistry> ResourceKey<TRegistry> register(ResourceKey<? extends Registry<TRegistry>> registryType, String registryName, Function<Identifier, ? extends TRegistry> factory);
 
     /// Enqueues a new registration for the given registry type, name and factory
     ///
@@ -219,7 +227,7 @@ public interface Registree {
     ///
     /// @return The value enqueued to be registered
     /// @see #register(ResourceKey, String, Function)
-    default <TRegistry, TElement extends TRegistry> TElement registerElement(ResourceKey<? extends Registry<TRegistry>> registryType, String registryName, Function<ResourceLocation, TElement> factory) {
+    default <TRegistry, TElement extends TRegistry> TElement registerElement(ResourceKey<? extends Registry<TRegistry>> registryType, String registryName, Function<Identifier, TElement> factory) {
         var element = factory.apply(registryName(registryName));
         register(registryType, registryName, () -> element);
         return element;
@@ -236,7 +244,7 @@ public interface Registree {
     ///
     /// @return The {@link Holder} holding the enqueued registration, built via the given holder factory
     /// @see #registerElement(ResourceKey, String, Function)
-    default <TRegistry, THolder extends Holder<TRegistry>> THolder registerForHolder(ResourceKey<? extends Registry<TRegistry>> registryType, String registryName, Function<ResourceLocation, ? extends TRegistry> elementFactory, Function<ResourceKey<TRegistry>, THolder> holderFactory) {
+    default <TRegistry, THolder extends Holder<TRegistry>> THolder registerForHolder(ResourceKey<? extends Registry<TRegistry>> registryType, String registryName, Function<Identifier, ? extends TRegistry> elementFactory, Function<ResourceKey<TRegistry>, THolder> holderFactory) {
         var registryKey = register(registryType, registryName, elementFactory);
         return holderFactory.apply(registryKey);
     }
@@ -253,7 +261,7 @@ public interface Registree {
     ///
     /// @return The {@link ApexDeferredHolder} holding the enqueued registration
     /// @see #registerForHolder(ResourceKey, String, Function, Function)
-    default <TRegistry, TElement extends TRegistry> ApexDeferredHolder<TRegistry, TElement> registerForHolder(ResourceKey<? extends Registry<TRegistry>> registryType, String registryName, Function<ResourceLocation, ? extends TRegistry> factory) {
+    default <TRegistry, TElement extends TRegistry> ApexDeferredHolder<TRegistry, TElement> registerForHolder(ResourceKey<? extends Registry<TRegistry>> registryType, String registryName, Function<Identifier, ? extends TRegistry> factory) {
         return registerForHolder(registryType, registryName, factory, ApexDeferredHolder::new);
     }
 
@@ -890,50 +898,90 @@ public interface Registree {
         return registerParticle(registryName, () -> new SimpleParticleType(overrideLimiter));
     }
     // endregion
-    // endregion
 
     // region: GameRules
-    /// Registers a new {@link GameRules.Value} for the given registry name and type
+    /// Registers a new {@link GameRule} for the given registry name and type
     ///
-    /// @return {@link GameRules.Key} pointing towards the registered {@link GameRules.Value}
-    default <TValue extends GameRules.Value<TValue>> GameRules.Key<TValue> registerGameRule(String registryName, GameRules.Category category, GameRules.Type<TValue> type) {
-        return GameRules.register(registryIdentifier(registryName), category, type);
+    /// @return The {@link DeferredGameRule} holding the enqueued {@link GameRule} registration
+    default <TValue> DeferredGameRule<TValue> registerGameRule(String registryName, GameRuleCategory category, GameRuleType ruleType, ArgumentType<TValue> argumentType, Codec<TValue> codec, TValue defaultValue, FeatureFlagSet requiredFeatures, GameRules.VisitorCaller<TValue> visitor, ToIntFunction<TValue> commandResult) {
+        return registerForHolder(Registries.GAME_RULE, registryName, () -> new GameRule<>(category, ruleType, argumentType, visitor, codec, commandResult, defaultValue, requiredFeatures), DeferredGameRule::new);
+    }
+
+    /// Registers a new {@link GameRule} for the given registry name and type
+    ///
+    /// @return The {@link DeferredGameRule} holding the enqueued {@link GameRule} registration
+    /// @see #registerGameRule(String, GameRuleCategory, GameRuleType, ArgumentType, Codec, Object, FeatureFlagSet, GameRules.VisitorCaller, ToIntFunction)
+    default <TValue> DeferredGameRule<TValue> registerGameRule(String registryName, GameRuleCategory category, GameRuleType ruleType, ArgumentType<TValue> argumentType, Codec<TValue> codec, TValue defaultValue, GameRules.VisitorCaller<TValue> visitor, ToIntFunction<TValue> commandResult) {
+        return registerGameRule(registryName, category, ruleType, argumentType, codec, defaultValue, FeatureFlags.DEFAULT_FLAGS, visitor, commandResult);
     }
 
     // region: Boolean
-    /// Registers a new {@link GameRules.BooleanValue} for the given registry name
+    /// Registers a new {@link GameRule} for the given registry name and type
     ///
-    /// @return {@link GameRules.Key} pointing towards the registered {@link GameRules.BooleanValue}
-    /// @see #registerGameRule(String, GameRules.Category, GameRules.Type)
-    default GameRules.Key<GameRules.BooleanValue> registerBooleanGameRule(String registryName, GameRules.Category category, boolean defaultValue, BiConsumer<MinecraftServer, GameRules.BooleanValue> changeListener) {
-        return registerGameRule(registryName, category, GameRules.BooleanValue.create(defaultValue, changeListener));
+    /// @return The {@link DeferredGameRule} holding the enqueued {@link GameRule} registration
+    /// @see #registerGameRule(String, GameRuleCategory, GameRuleType, ArgumentType, Codec, Object, FeatureFlagSet, GameRules.VisitorCaller, ToIntFunction)
+    default DeferredGameRule<Boolean> registerBooleanGameRule(String registryName, GameRuleCategory category, boolean defaultValue, FeatureFlagSet requiredFeatures) {
+        return registerGameRule(registryName, category, GameRuleType.BOOL, BoolArgumentType.bool(), Codec.BOOL, defaultValue, requiredFeatures, GameRuleTypeVisitor::visitBoolean, value -> value ? Command.SINGLE_SUCCESS : 0);
     }
 
-    /// Registers a new {@link GameRules.BooleanValue} for the given registry name
+    /// Registers a new {@link GameRule} for the given registry name and type
     ///
-    /// @return {@link GameRules.Key} pointing towards the registered {@link GameRules.BooleanValue}
-    /// @see #registerBooleanGameRule(String, GameRules.Category, boolean, BiConsumer)
-    default GameRules.Key<GameRules.BooleanValue> registerBooleanGameRule(String registryName, GameRules.Category category, boolean defaultValue) {
-        return registerBooleanGameRule(registryName, category, defaultValue, (server, value) -> { });
+    /// @return The {@link DeferredGameRule} holding the enqueued {@link GameRule} registration
+    /// @see #registerBooleanGameRule(String, GameRuleCategory, boolean, FeatureFlagSet)
+    default DeferredGameRule<Boolean> registerBooleanGameRule(String registryName, GameRuleCategory category, boolean defaultValue) {
+        return registerBooleanGameRule(registryName, category, defaultValue, FeatureFlags.DEFAULT_FLAGS);
+    }
+
+    /// Registers a new {@link GameRule} for the given registry name and type
+    ///
+    /// @return The {@link DeferredGameRule} holding the enqueued {@link GameRule} registration
+    /// @see #registerBooleanGameRule(String, GameRuleCategory, boolean, FeatureFlagSet)
+    default DeferredGameRule<Boolean> registerBooleanGameRule(String registryName, GameRuleCategory category, FeatureFlagSet requiredFeatures) {
+        return registerBooleanGameRule(registryName, category, false, requiredFeatures);
+    }
+
+    /// Registers a new {@link GameRule} for the given registry name and type
+    ///
+    /// @return The {@link DeferredGameRule} holding the enqueued {@link GameRule} registration
+    /// @see #registerBooleanGameRule(String, GameRuleCategory, boolean, FeatureFlagSet)
+    default DeferredGameRule<Boolean> registerBooleanGameRule(String registryName, GameRuleCategory category) {
+        return registerBooleanGameRule(registryName, category, false, FeatureFlags.DEFAULT_FLAGS);
     }
     // endregion
 
     // region: Integer
-    /// Registers a new {@link GameRules.IntegerValue} for the given registry name
+    /// Registers a new {@link GameRule} for the given registry name and type
     ///
-    /// @return {@link GameRules.Key} pointing towards the registered {@link GameRules.IntegerValue}
-    /// @see #registerGameRule(String, GameRules.Category, GameRules.Type)
-    default GameRules.Key<GameRules.IntegerValue> registerIntegerGameRule(String registryName, GameRules.Category category, int defaultValue, BiConsumer<MinecraftServer, GameRules.IntegerValue> changeListener) {
-        return registerGameRule(registryName, category, GameRules.IntegerValue.create(defaultValue, changeListener));
+    /// @return The {@link DeferredGameRule} holding the enqueued {@link GameRule} registration
+    /// @see #registerGameRule(String, GameRuleCategory, GameRuleType, ArgumentType, Codec, Object, FeatureFlagSet, GameRules.VisitorCaller, ToIntFunction)
+    default DeferredGameRule<Integer> registerIntegerGameRule(String registryName, GameRuleCategory category, int defaultValue, int min, int max, FeatureFlagSet requiredFeatures) {
+        return registerGameRule(registryName, category, GameRuleType.INT, IntegerArgumentType.integer(min, max), Codec.intRange(min, max), defaultValue, requiredFeatures, GameRuleTypeVisitor::visitInteger, value -> value);
     }
 
-    /// Registers a new {@link GameRules.IntegerValue} for the given registry name
+    /// Registers a new {@link GameRule} for the given registry name and type
     ///
-    /// @return {@link GameRules.Key} pointing towards the registered {@link GameRules.IntegerValue}
-    /// @see #registerIntegerGameRule(String, GameRules.Category, int)
-    default GameRules.Key<GameRules.IntegerValue> registerIntegerGameRule(String registryName, GameRules.Category category, int defaultValue) {
-        return registerIntegerGameRule(registryName, category, defaultValue, (server, value) -> { });
+    /// @return The {@link DeferredGameRule} holding the enqueued {@link GameRule} registration
+    /// @see #registerIntegerGameRule(String, GameRuleCategory, int, int, int, FeatureFlagSet)
+    default DeferredGameRule<Integer> registerIntegerGameRule(String registryName, GameRuleCategory category, int defaultValue, int min, int max) {
+        return registerIntegerGameRule(registryName, category, defaultValue, min, max, FeatureFlags.DEFAULT_FLAGS);
     }
+
+    /// Registers a new {@link GameRule} for the given registry name and type
+    ///
+    /// @return The {@link DeferredGameRule} holding the enqueued {@link GameRule} registration
+    /// @see #registerIntegerGameRule(String, GameRuleCategory, int, int, int, FeatureFlagSet)
+    default DeferredGameRule<Integer> registerIntegerGameRule(String registryName, GameRuleCategory category, int defaultValue, int min) {
+        return registerIntegerGameRule(registryName, category, defaultValue, min, Integer.MAX_VALUE, FeatureFlags.DEFAULT_FLAGS);
+    }
+
+    /// Registers a new {@link GameRule} for the given registry name and type
+    ///
+    /// @return The {@link DeferredGameRule} holding the enqueued {@link GameRule} registration
+    /// @see #registerIntegerGameRule(String, GameRuleCategory, int, int, int, FeatureFlagSet)
+    default DeferredGameRule<Integer> registerIntegerGameRule(String registryName, GameRuleCategory category, int defaultValue, int min, FeatureFlagSet requiredFeatures) {
+        return registerIntegerGameRule(registryName, category, defaultValue, min, Integer.MAX_VALUE, requiredFeatures);
+    }
+    // endregion
     // endregion
     // endregion
 
@@ -944,11 +992,11 @@ public interface Registree {
 
     /// {@return Default CreativeModeTab translation key}
     static String creativeModeTabKey(ResourceKey<CreativeModeTab> registryKey) {
-        return creativeModeTabKey(registryKey.location());
+        return creativeModeTabKey(registryKey.identifier());
     }
 
     /// {@return Default CreativeModeTab translation key}
-    static String creativeModeTabKey(ResourceLocation registryName) {
+    static String creativeModeTabKey(Identifier registryName) {
         return registryName.toLanguageKey("itemGroup");
     }
 }
