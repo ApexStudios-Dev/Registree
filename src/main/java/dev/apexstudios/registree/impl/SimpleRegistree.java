@@ -19,7 +19,6 @@ import dev.apexstudios.registree.api.holder.DeferredParticleType;
 import dev.apexstudios.registree.api.holder.DeferredRecipeSerializer;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -38,9 +37,8 @@ import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -55,7 +53,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.item.crafting.Recipe;
-import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -75,7 +72,7 @@ public class SimpleRegistree implements Registree {
     protected final String namespace;
 
     private final Table<ResourceKey<? extends Registry<?>>, String, Holder.Reference<?>> holders = HashBasedTable.create();
-    private final Table<ResourceKey<? extends Registry<?>>, String, Function<ResourceLocation, ?>> factories = HashBasedTable.create();
+    private final Table<ResourceKey<? extends Registry<?>>, String, Function<Identifier, ?>> factories = HashBasedTable.create();
     private final Table<ResourceKey<? extends Registry<?>>, String, Consumer<?>> listeners = HashBasedTable.create();
     private final Set<ResourceKey<? extends Registry<?>>> registered = Sets.newHashSet();
     private final Set<ResourceKey<? extends Registry<?>>> finalized = Sets.newHashSet();
@@ -111,7 +108,7 @@ public class SimpleRegistree implements Registree {
         var registryType = registry.key();
 
         if(!registered.add(registryType))
-            throw new IllegalStateException("Duplicate registry registration: " + namespace + '#' + registryType.location());
+            throw new IllegalStateException("Duplicate registry registration: " + namespace + '#' + registryType.identifier());
 
         factories.row(registryType).forEach((registryName, factory) -> {
             var fullName = registryName(registryName);
@@ -124,9 +121,9 @@ public class SimpleRegistree implements Registree {
         var registryType = registry.key();
 
         if(!registered.contains(registryType))
-            throw new IllegalStateException("Can not finalize registry before elements are registered: " + namespace + '#' + registryType.location());
+            throw new IllegalStateException("Can not finalize registry before elements are registered: " + namespace + '#' + registryType.identifier());
         if(!finalized.add(registryType))
-            throw new IllegalStateException("Duplicate registry finalization: " + namespace + '#' + registryType.location());
+            throw new IllegalStateException("Duplicate registry finalization: " + namespace + '#' + registryType.identifier());
 
         listeners.row(registryType).forEach((registryName, listener) -> {
             getOptional(registryType, registryName).ifPresent((Consumer<? super TRegistry>) listener);
@@ -177,11 +174,11 @@ public class SimpleRegistree implements Registree {
     }
 
     @Override
-    public final <TRegistry> ResourceKey<TRegistry> register(ResourceKey<? extends Registry<TRegistry>> registryType, String registryName, Function<ResourceLocation, ? extends TRegistry> factory) {
+    public final <TRegistry> ResourceKey<TRegistry> register(ResourceKey<? extends Registry<TRegistry>> registryType, String registryName, Function<Identifier, ? extends TRegistry> factory) {
         if(registered.contains(registryType))
-            throw new IllegalStateException("Registree is already frozen: " + namespace + '#' + registryType.location());
+            throw new IllegalStateException("Registree is already frozen: " + namespace + '#' + registryType.identifier());
         if(factories.put(registryType, registryName, factory) != null)
-            throw new IllegalStateException("Duplicate registration: " + registryName + " in registry: " + namespace + '#' + registryType.location());
+            throw new IllegalStateException("Duplicate registration: " + registryName + " in registry: " + namespace + '#' + registryType.identifier());
 
         return registryKey(registryType, registryName);
     }
@@ -200,7 +197,7 @@ public class SimpleRegistree implements Registree {
     }
 
     @Override
-    public final ResourceLocation registryName(String registryName) {
+    public final Identifier registryName(String registryName) {
         return Registree.super.registryName(registryName);
     }
 
@@ -250,7 +247,7 @@ public class SimpleRegistree implements Registree {
     }
 
     @Override
-    public final <TRegistry, TElement extends TRegistry> TElement registerElement(ResourceKey<? extends Registry<TRegistry>> registryType, String registryName, Function<ResourceLocation, TElement> factory) {
+    public final <TRegistry, TElement extends TRegistry> TElement registerElement(ResourceKey<? extends Registry<TRegistry>> registryType, String registryName, Function<Identifier, TElement> factory) {
         return Registree.super.registerElement(registryType, registryName, factory);
     }
 
@@ -260,7 +257,7 @@ public class SimpleRegistree implements Registree {
     }
 
     @Override
-    public final <TRegistry, THolder extends Holder<TRegistry>> THolder registerForHolder(ResourceKey<? extends Registry<TRegistry>> registryType, String registryName, Function<ResourceLocation, ? extends TRegistry> elementFactory, Function<ResourceKey<TRegistry>, THolder> holderFactory) {
+    public final <TRegistry, THolder extends Holder<TRegistry>> THolder registerForHolder(ResourceKey<? extends Registry<TRegistry>> registryType, String registryName, Function<Identifier, ? extends TRegistry> elementFactory, Function<ResourceKey<TRegistry>, THolder> holderFactory) {
         return Registree.super.registerForHolder(registryType, registryName, elementFactory, holderFactory);
     }
 
@@ -270,7 +267,7 @@ public class SimpleRegistree implements Registree {
     }
 
     @Override
-    public final <TRegistry, TElement extends TRegistry> ApexDeferredHolder<TRegistry, TElement> registerForHolder(ResourceKey<? extends Registry<TRegistry>> registryType, String registryName, Function<ResourceLocation, ? extends TRegistry> factory) {
+    public final <TRegistry, TElement extends TRegistry> ApexDeferredHolder<TRegistry, TElement> registerForHolder(ResourceKey<? extends Registry<TRegistry>> registryType, String registryName, Function<Identifier, ? extends TRegistry> factory) {
         return Registree.super.registerForHolder(registryType, registryName, factory);
     }
 
@@ -632,31 +629,6 @@ public class SimpleRegistree implements Registree {
     @Override
     public final DeferredParticleType<SimpleParticleType, SimpleParticleType> registerSimpleParticle(String registryName, boolean overrideLimiter) {
         return Registree.super.registerSimpleParticle(registryName, overrideLimiter);
-    }
-
-    @Override
-    public final <TValue extends GameRules.Value<TValue>> GameRules.Key<TValue> registerGameRule(String registryName, GameRules.Category category, GameRules.Type<TValue> type) {
-        return Registree.super.registerGameRule(registryName, category, type);
-    }
-
-    @Override
-    public final GameRules.Key<GameRules.BooleanValue> registerBooleanGameRule(String registryName, GameRules.Category category, boolean defaultValue, BiConsumer<MinecraftServer, GameRules.BooleanValue> changeListener) {
-        return Registree.super.registerBooleanGameRule(registryName, category, defaultValue, changeListener);
-    }
-
-    @Override
-    public final GameRules.Key<GameRules.BooleanValue> registerBooleanGameRule(String registryName, GameRules.Category category, boolean defaultValue) {
-        return Registree.super.registerBooleanGameRule(registryName, category, defaultValue);
-    }
-
-    @Override
-    public final GameRules.Key<GameRules.IntegerValue> registerIntegerGameRule(String registryName, GameRules.Category category, int defaultValue, BiConsumer<MinecraftServer, GameRules.IntegerValue> changeListener) {
-        return Registree.super.registerIntegerGameRule(registryName, category, defaultValue, changeListener);
-    }
-
-    @Override
-    public final GameRules.Key<GameRules.IntegerValue> registerIntegerGameRule(String registryName, GameRules.Category category, int defaultValue) {
-        return Registree.super.registerIntegerGameRule(registryName, category, defaultValue);
     }
     // endregion
 }
