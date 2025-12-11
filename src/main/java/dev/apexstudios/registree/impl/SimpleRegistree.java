@@ -66,7 +66,7 @@ import net.neoforged.neoforge.network.IContainerFactory;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import org.apache.commons.lang3.function.Consumers;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class SimpleRegistree implements Registree {
     protected final String namespace;
@@ -77,7 +77,8 @@ public class SimpleRegistree implements Registree {
     private final Set<ResourceKey<? extends Registry<?>>> registered = Sets.newHashSet();
     private final Set<ResourceKey<? extends Registry<?>>> finalized = Sets.newHashSet();
     private boolean frozen = false;
-    @Nullable private IEventBus modBus = null;
+    @Nullable
+    private IEventBus modBus = null;
     private Consumer<IEventBus> delayedEventRegistration = Consumers.nop();
 
     public SimpleRegistree(String namespace) {
