@@ -696,7 +696,7 @@ public interface Registree {
     ///
     /// @return The {@link DeferredMenu} holding the enqueued {@link MenuType} registration
     /// @see #registerMenu(String, MenuType.MenuSupplier, FeatureFlag)
-    <TMenu extends AbstractContainerMenu, TScreen extends Screen & MenuAccess<TMenu>> DeferredMenu<TMenu> registerMenu(String registryName, MenuType.MenuSupplier<TMenu> factory, Supplier<MenuScreens.ScreenConstructor<TMenu, TScreen>> screenFactory, FeatureFlagSet requiredFeatures);
+    <TMenu extends AbstractContainerMenu, TScreen extends Screen & MenuAccess<TMenu>> DeferredMenu<TMenu> registerMenu(String registryName, MenuType.MenuSupplier<TMenu> factory, Supplier<Supplier<MenuScreens.ScreenConstructor<TMenu, TScreen>>> screenFactory, FeatureFlagSet requiredFeatures);
 
     /// Enqueues a new {@link MenuType} registration for the given registry name
     ///
@@ -704,7 +704,7 @@ public interface Registree {
     ///
     /// @return The {@link DeferredMenu} holding the enqueued {@link MenuType} registration
     /// @see #registerMenu(String, MenuType.MenuSupplier, Supplier, FeatureFlagSet)
-    default <TMenu extends AbstractContainerMenu, TScreen extends Screen & MenuAccess<TMenu>> DeferredMenu<TMenu> registerMenu(String registryName, MenuType.MenuSupplier<TMenu> factory, Supplier<MenuScreens.ScreenConstructor<TMenu, TScreen>> screenFactory, FeatureFlag requiredFeature, FeatureFlag... requiredFeatures) {
+    default <TMenu extends AbstractContainerMenu, TScreen extends Screen & MenuAccess<TMenu>> DeferredMenu<TMenu> registerMenu(String registryName, MenuType.MenuSupplier<TMenu> factory, Supplier<Supplier<MenuScreens.ScreenConstructor<TMenu, TScreen>>> screenFactory, FeatureFlag requiredFeature, FeatureFlag... requiredFeatures) {
         return registerMenu(registryName, factory, screenFactory, FeatureFlagSet.of(requiredFeature, requiredFeatures));
     }
 
@@ -714,7 +714,7 @@ public interface Registree {
     ///
     /// @return The {@link DeferredMenu} holding the enqueued {@link MenuType} registration
     /// @see #registerMenu(String, MenuType.MenuSupplier, Supplier, FeatureFlagSet)
-    default <TMenu extends AbstractContainerMenu, TScreen extends Screen & MenuAccess<TMenu>> DeferredMenu<TMenu> registerMenu(String registryName, MenuType.MenuSupplier<TMenu> factory, Supplier<MenuScreens.ScreenConstructor<TMenu, TScreen>> screenFactory, FeatureFlag requiredFeature) {
+    default <TMenu extends AbstractContainerMenu, TScreen extends Screen & MenuAccess<TMenu>> DeferredMenu<TMenu> registerMenu(String registryName, MenuType.MenuSupplier<TMenu> factory, Supplier<Supplier<MenuScreens.ScreenConstructor<TMenu, TScreen>>> screenFactory, FeatureFlag requiredFeature) {
         return registerMenu(registryName, factory, screenFactory, FeatureFlagSet.of(requiredFeature));
     }
 
@@ -724,7 +724,7 @@ public interface Registree {
     ///
     /// @return The {@link DeferredMenu} holding the enqueued {@link MenuType} registration
     /// @see #registerMenu(String, MenuType.MenuSupplier, Supplier, FeatureFlagSet)
-    default <TMenu extends AbstractContainerMenu, TScreen extends Screen & MenuAccess<TMenu>> DeferredMenu<TMenu> registerMenu(String registryName, MenuType.MenuSupplier<TMenu> factory, Supplier<MenuScreens.ScreenConstructor<TMenu, TScreen>> screenFactory) {
+    default <TMenu extends AbstractContainerMenu, TScreen extends Screen & MenuAccess<TMenu>> DeferredMenu<TMenu> registerMenu(String registryName, MenuType.MenuSupplier<TMenu> factory, Supplier<Supplier<MenuScreens.ScreenConstructor<TMenu, TScreen>>> screenFactory) {
         return registerMenu(registryName, factory, screenFactory, FeatureFlags.VANILLA_SET);
     }
 
@@ -734,7 +734,7 @@ public interface Registree {
     ///
     /// @return The {@link DeferredMenu} holding the enqueued {@link MenuType} registration
     /// @see #registerMenu(String, MenuType.MenuSupplier, Supplier, FeatureFlagSet)
-    default <TMenu extends AbstractContainerMenu, TScreen extends Screen & MenuAccess<TMenu>> DeferredMenu<TMenu> registerMenu(String registryName, IContainerFactory<TMenu> factory, Supplier<MenuScreens.ScreenConstructor<TMenu, TScreen>> screenFactory, FeatureFlagSet requiredFeatures) {
+    default <TMenu extends AbstractContainerMenu, TScreen extends Screen & MenuAccess<TMenu>> DeferredMenu<TMenu> registerMenu(String registryName, IContainerFactory<TMenu> factory, Supplier<Supplier<MenuScreens.ScreenConstructor<TMenu, TScreen>>> screenFactory, FeatureFlagSet requiredFeatures) {
         return registerMenu(registryName, (MenuType.MenuSupplier<TMenu>) factory, screenFactory, requiredFeatures);
     }
 
@@ -744,7 +744,7 @@ public interface Registree {
     ///
     /// @return The {@link DeferredMenu} holding the enqueued {@link MenuType} registration
     /// @see #registerMenu(String, MenuType.MenuSupplier, Supplier, FeatureFlagSet)
-    default <TMenu extends AbstractContainerMenu, TScreen extends Screen & MenuAccess<TMenu>> DeferredMenu<TMenu> registerMenu(String registryName, IContainerFactory<TMenu> factory, Supplier<MenuScreens.ScreenConstructor<TMenu, TScreen>> screenFactory, FeatureFlag requiredFeature, FeatureFlag... requiredFeatures) {
+    default <TMenu extends AbstractContainerMenu, TScreen extends Screen & MenuAccess<TMenu>> DeferredMenu<TMenu> registerMenu(String registryName, IContainerFactory<TMenu> factory, Supplier<Supplier<MenuScreens.ScreenConstructor<TMenu, TScreen>>> screenFactory, FeatureFlag requiredFeature, FeatureFlag... requiredFeatures) {
         return registerMenu(registryName, factory, screenFactory, FeatureFlagSet.of(requiredFeature, requiredFeatures));
     }
 
@@ -754,7 +754,7 @@ public interface Registree {
     ///
     /// @return The {@link DeferredMenu} holding the enqueued {@link MenuType} registration
     /// @see #registerMenu(String, MenuType.MenuSupplier, Supplier, FeatureFlagSet)
-    default <TMenu extends AbstractContainerMenu, TScreen extends Screen & MenuAccess<TMenu>> DeferredMenu<TMenu> registerMenu(String registryName, IContainerFactory<TMenu> factory, Supplier<MenuScreens.ScreenConstructor<TMenu, TScreen>> screenFactory, FeatureFlag requiredFeature) {
+    default <TMenu extends AbstractContainerMenu, TScreen extends Screen & MenuAccess<TMenu>> DeferredMenu<TMenu> registerMenu(String registryName, IContainerFactory<TMenu> factory, Supplier<Supplier<MenuScreens.ScreenConstructor<TMenu, TScreen>>> screenFactory, FeatureFlag requiredFeature) {
         return registerMenu(registryName, factory, screenFactory, FeatureFlagSet.of(requiredFeature));
     }
 
@@ -764,7 +764,7 @@ public interface Registree {
     ///
     /// @return The {@link DeferredMenu} holding the enqueued {@link MenuType} registration
     /// @see #registerMenu(String, MenuType.MenuSupplier, Supplier, FeatureFlagSet)
-    default <TMenu extends AbstractContainerMenu, TScreen extends Screen & MenuAccess<TMenu>> DeferredMenu<TMenu> registerMenu(String registryName, IContainerFactory<TMenu> factory, Supplier<MenuScreens.ScreenConstructor<TMenu, TScreen>> screenFactory) {
+    default <TMenu extends AbstractContainerMenu, TScreen extends Screen & MenuAccess<TMenu>> DeferredMenu<TMenu> registerMenu(String registryName, IContainerFactory<TMenu> factory, Supplier<Supplier<MenuScreens.ScreenConstructor<TMenu, TScreen>>> screenFactory) {
         return registerMenu(registryName, factory, screenFactory, FeatureFlags.VANILLA_SET);
     }
     // endregion
