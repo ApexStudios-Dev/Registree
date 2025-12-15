@@ -2,6 +2,7 @@ package dev.apexstudios.registree.api;
 
 import dev.apexstudios.registree.api.registrar.IBlockEntityTypeRegistrar;
 import dev.apexstudios.registree.api.registrar.IBlockRegistrar;
+import dev.apexstudios.registree.api.registrar.IEntityTypeRegistrar;
 import dev.apexstudios.registree.api.registrar.IItemRegistrar;
 import dev.apexstudios.registree.api.registrar.IRegistrar;
 import dev.apexstudios.registree.core.Registree;
@@ -38,6 +39,10 @@ public interface IRegistree {
 
     default IBlockEntityTypeRegistrar blockEntityTypes() {
         return (IBlockEntityTypeRegistrar) registrar(Registries.BLOCK_ENTITY_TYPE);
+    }
+
+    default IEntityTypeRegistrar entityTypes() {
+        return (IEntityTypeRegistrar) registrar(Registries.ENTITY_TYPE);
     }
 
     void register(IEventBus modBus);

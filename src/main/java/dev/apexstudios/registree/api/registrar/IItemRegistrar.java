@@ -6,14 +6,19 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import org.apache.commons.lang3.function.Consumers;
 
 public interface IItemRegistrar extends IRegistrar<Item> {
+    String SPAWN_EGG_SUFFIX = "_spawn_egg";
+
     default <TItem extends Item> DeferredItem<TItem> registerItem(String identifier, Function<Item.Properties, TItem> factory, Consumer<Item.Properties> propertiesModifier) {
         return registerForHolder(identifier, registryName -> {
             var properties = new Item.Properties().setId(registryKey(registryName));
@@ -64,6 +69,14 @@ public interface IItemRegistrar extends IRegistrar<Item> {
 
     default DeferredItem<BlockItem> registerBlockItem(DeferredHolder<Block, ? extends Block> block) {
         return registerBlockItem(block, Consumers.nop());
+    }
+
+    default DeferredItem<SpawnEggItem> registerSpawnEggItem(DeferredHolder<EntityType<?>, EntityType<? extends Entity>> entityType, Consumer<Item.Properties> propertiesModifier) {
+        return registerItem(entityType.getId() + SPAWN_EGG_SUFFIX, SpawnEggItem::new, properties -> propertiesModifier.accept(properties.spawnEgg(entityType.value())));
+    }
+
+    default DeferredItem<SpawnEggItem> registerSpawnEggItem(DeferredHolder<EntityType<?>, EntityType<? extends Entity>> entityType) {
+        return registerSpawnEggItem(entityType, Consumers.nop());
     }
 
     default <TItem extends Item> IItemBuilder<TItem> builder(String identifier, Function<Item.Properties, TItem> factory) {
