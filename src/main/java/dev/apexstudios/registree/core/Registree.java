@@ -7,6 +7,7 @@ import dev.apexstudios.registree.core.registrar.BlockEntityTypeRegistrar;
 import dev.apexstudios.registree.core.registrar.BlockRegistrar;
 import dev.apexstudios.registree.core.registrar.EntityTypeRegistrar;
 import dev.apexstudios.registree.core.registrar.ItemRegistrar;
+import dev.apexstudios.registree.core.registrar.MenuTypeRegistrar;
 import dev.apexstudios.registree.core.registrar.Registrar;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -32,6 +33,7 @@ public class Registree implements IRegistree {
         setRegistrar(Registries.ITEM, () -> new ItemRegistrar(this));
         setRegistrar(Registries.BLOCK_ENTITY_TYPE, () -> new BlockEntityTypeRegistrar(this));
         setRegistrar(Registries.ENTITY_TYPE, () -> new EntityTypeRegistrar(this));
+        setRegistrar(Registries.MENU, () -> new MenuTypeRegistrar(this));
     }
 
     protected <TRegistry> void setRegistrar(ResourceKey<? extends Registry<TRegistry>> registryType, Supplier<IRegistrar<TRegistry>> registrar) {

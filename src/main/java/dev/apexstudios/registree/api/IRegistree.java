@@ -4,6 +4,7 @@ import dev.apexstudios.registree.api.registrar.IBlockEntityTypeRegistrar;
 import dev.apexstudios.registree.api.registrar.IBlockRegistrar;
 import dev.apexstudios.registree.api.registrar.IEntityTypeRegistrar;
 import dev.apexstudios.registree.api.registrar.IItemRegistrar;
+import dev.apexstudios.registree.api.registrar.IMenuTypeRegistrar;
 import dev.apexstudios.registree.api.registrar.IRegistrar;
 import dev.apexstudios.registree.core.Registree;
 import java.util.function.Consumer;
@@ -43,6 +44,10 @@ public interface IRegistree {
 
     default IEntityTypeRegistrar entityTypes() {
         return (IEntityTypeRegistrar) registrar(Registries.ENTITY_TYPE);
+    }
+
+    default IMenuTypeRegistrar menuTypes() {
+        return (IMenuTypeRegistrar) registrar(Registries.MENU);
     }
 
     void register(IEventBus modBus);
