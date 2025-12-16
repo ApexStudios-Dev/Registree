@@ -1,5 +1,6 @@
 package dev.apexstudios.registree.api.builder;
 
+import dev.apexstudios.registree.api.holder.DeferredItem;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -9,7 +10,6 @@ import net.neoforged.neoforge.capabilities.ICapabilityProvider;
 import net.neoforged.neoforge.capabilities.ItemCapability;
 import net.neoforged.neoforge.client.IItemDecorator;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
-import net.neoforged.neoforge.registries.DeferredItem;
 import org.jspecify.annotations.Nullable;
 
 public interface IItemBuilder<TItem extends Item> extends IBuilder<Item, TItem, DeferredItem<TItem>, IItemBuilder<TItem>> {

@@ -17,11 +17,11 @@ import net.minecraft.world.level.gamerules.GameRuleType;
 import net.minecraft.world.level.gamerules.GameRuleTypeVisitor;
 import net.minecraft.world.level.gamerules.GameRules;
 
-public interface IGameRuleRegistrar extends IRegistrar<GameRule<?>> {
+public interface IGameRuleRegistrar extends IRegistrar<GameRule<?>, DeferredGameRule<?>> {
     GameRules.VisitorCaller<?> EMPTY_VISITOR = (visitor, gameRule) -> { };
 
     default <TType> DeferredGameRule<TType> registerGameRule(String identifier, GameRuleCategory category, GameRuleType type, ArgumentType<TType> argumentType, Codec<TType> codec, TType defaultValue, FeatureFlagSet requiredFeatures, GameRules.VisitorCaller<TType> visitor, ToIntFunction<TType> commandResult) {
-        return registerForHolder(identifier, registryName -> new GameRule<>(category, type, argumentType, visitor, codec, commandResult, defaultValue, requiredFeatures), DeferredGameRule::new);
+        return registerForHolder(identifier, registryName -> new GameRule<>(category, type, argumentType, visitor, codec, commandResult, defaultValue, requiredFeatures));
     }
 
     default <TType> DeferredGameRule<TType> registerGameRule(String identifier, GameRuleCategory category, GameRuleType type, ArgumentType<TType> argumentType, Codec<TType> codec, TType defaultValue, FeatureFlagSet requiredFeatures, ToIntFunction<TType> commandResult) {

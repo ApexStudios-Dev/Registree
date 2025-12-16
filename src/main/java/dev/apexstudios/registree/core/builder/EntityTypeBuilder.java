@@ -42,7 +42,7 @@ public class EntityTypeBuilder<TEntity extends Entity> extends Builder<EntityTyp
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     public EntityTypeBuilder(IEntityTypeRegistrar registrar, String identifier, EntityType.EntityFactory<TEntity> factory, MobCategory category) {
-        super(registrar, identifier, DeferredEntityType::new);
+        super(registrar, identifier);
 
         this.factory = factory;
         this.category = category;

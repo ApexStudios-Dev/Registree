@@ -1,22 +1,22 @@
 package dev.apexstudios.registree.api.registrar;
 
 import dev.apexstudios.registree.api.builder.IItemBuilder;
+import dev.apexstudios.registree.api.holder.DeferredBlock;
+import dev.apexstudios.registree.api.holder.DeferredEntityType;
+import dev.apexstudios.registree.api.holder.DeferredItem;
 import dev.apexstudios.registree.core.builder.ItemBuilder;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.level.block.Block;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredItem;
 import org.apache.commons.lang3.function.Consumers;
 
-public interface IItemRegistrar extends IRegistrar<Item> {
+public interface IItemRegistrar extends IRegistrar<Item, DeferredItem<?>> {
     String SPAWN_EGG_SUFFIX = "_spawn_egg";
 
     default <TItem extends Item> DeferredItem<TItem> registerItem(String identifier, Function<Item.Properties, TItem> factory, Consumer<Item.Properties> propertiesModifier) {
@@ -24,7 +24,7 @@ public interface IItemRegistrar extends IRegistrar<Item> {
             var properties = new Item.Properties().setId(registryKey(registryName));
             propertiesModifier.accept(properties);
             return factory.apply(properties);
-        }, DeferredItem::createItem);
+        });
     }
 
     default <TItem extends Item> DeferredItem<TItem> registerItem(String identifier, Function<Item.Properties, TItem> factory) {
@@ -55,27 +55,27 @@ public interface IItemRegistrar extends IRegistrar<Item> {
         return registerBlockItem(identifier, block, Consumers.nop());
     }
 
-    default <TItem extends Item, TBlock extends Block> DeferredItem<TItem> registerBlockItem(DeferredHolder<Block, TBlock> block, BiFunction<TBlock, Item.Properties, TItem> factory, Consumer<Item.Properties> propertiesModifier) {
+    default <TItem extends Item, TBlock extends Block> DeferredItem<TItem> registerBlockItem(DeferredBlock<TBlock> block, BiFunction<TBlock, Item.Properties, TItem> factory, Consumer<Item.Properties> propertiesModifier) {
         return registerBlockItem(block.getId().getPath(), block, factory, propertiesModifier);
     }
 
-    default <TItem extends Item, TBlock extends Block> DeferredItem<TItem> registerBlockItem(DeferredHolder<Block, TBlock> block, BiFunction<TBlock, Item.Properties, TItem> factory) {
+    default <TItem extends Item, TBlock extends Block> DeferredItem<TItem> registerBlockItem(DeferredBlock<TBlock> block, BiFunction<TBlock, Item.Properties, TItem> factory) {
         return registerBlockItem(block, factory, Consumers.nop());
     }
 
-    default DeferredItem<BlockItem> registerBlockItem(DeferredHolder<Block, ? extends Block> block, Consumer<Item.Properties> propertiesModifier) {
+    default DeferredItem<BlockItem> registerBlockItem(DeferredBlock<? extends Block> block, Consumer<Item.Properties> propertiesModifier) {
         return registerBlockItem(block, BlockItem::new, propertiesModifier);
     }
 
-    default DeferredItem<BlockItem> registerBlockItem(DeferredHolder<Block, ? extends Block> block) {
+    default DeferredItem<BlockItem> registerBlockItem(DeferredBlock<? extends Block> block) {
         return registerBlockItem(block, Consumers.nop());
     }
 
-    default DeferredItem<SpawnEggItem> registerSpawnEggItem(DeferredHolder<EntityType<?>, EntityType<? extends Entity>> entityType, Consumer<Item.Properties> propertiesModifier) {
+    default DeferredItem<SpawnEggItem> registerSpawnEggItem(DeferredEntityType<? extends Entity> entityType, Consumer<Item.Properties> propertiesModifier) {
         return registerItem(entityType.getId() + SPAWN_EGG_SUFFIX, SpawnEggItem::new, properties -> propertiesModifier.accept(properties.spawnEgg(entityType.value())));
     }
 
-    default DeferredItem<SpawnEggItem> registerSpawnEggItem(DeferredHolder<EntityType<?>, EntityType<? extends Entity>> entityType) {
+    default DeferredItem<SpawnEggItem> registerSpawnEggItem(DeferredEntityType<? extends Entity> entityType) {
         return registerSpawnEggItem(entityType, Consumers.nop());
     }
 

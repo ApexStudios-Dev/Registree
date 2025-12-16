@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import dev.apexstudios.registree.api.builder.IBuilderContext;
 import dev.apexstudios.registree.api.builder.IItemBuilder;
+import dev.apexstudios.registree.api.holder.DeferredItem;
 import dev.apexstudios.registree.api.registrar.IItemRegistrar;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +20,6 @@ import net.neoforged.neoforge.client.IItemDecorator;
 import net.neoforged.neoforge.client.event.RegisterItemDecorationsEvent;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
-import net.neoforged.neoforge.registries.DeferredItem;
 import org.jspecify.annotations.Nullable;
 
 public class ItemBuilder<TItem extends Item> extends Builder<Item, TItem, DeferredItem<TItem>, IItemBuilder<TItem>> implements IItemBuilder<TItem> {
@@ -31,7 +31,7 @@ public class ItemBuilder<TItem extends Item> extends Builder<Item, TItem, Deferr
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     public ItemBuilder(IItemRegistrar registrar, String identifier, Function<Item.Properties, TItem> factory) {
-        super(registrar, identifier, DeferredItem::createItem);
+        super(registrar, identifier);
 
         this.factory = factory;
 

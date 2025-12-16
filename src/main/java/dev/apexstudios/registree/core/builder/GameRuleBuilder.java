@@ -24,7 +24,7 @@ public abstract class GameRuleBuilder<TType, TSelf extends IGameRuleBuilder<TTyp
     private FeatureFlagSet requiredFeatures = FeatureFlags.DEFAULT_FLAGS;
 
     public GameRuleBuilder(IGameRuleRegistrar registrar, String identifier, GameRuleCategory category, GameRuleType type, ArgumentType<TType> argumentType, Codec<TType> codec, TType defaultValue) {
-        super(registrar, identifier, DeferredGameRule::new);
+        super(registrar, identifier);
 
         this.category = category;
         this.type = type;

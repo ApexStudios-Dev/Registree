@@ -1,5 +1,6 @@
 package dev.apexstudios.registree.api.builder;
 
+import dev.apexstudios.registree.api.holder.DeferredBlock;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -15,7 +16,6 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.capabilities.IBlockCapabilityProvider;
 import net.neoforged.neoforge.client.extensions.common.IClientBlockExtensions;
-import net.neoforged.neoforge.registries.DeferredBlock;
 import org.apache.commons.lang3.function.Consumers;
 import org.jspecify.annotations.Nullable;
 

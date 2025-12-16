@@ -9,13 +9,13 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import org.apache.commons.lang3.function.Consumers;
 
-public interface IEntityTypeRegistrar extends IRegistrar<EntityType<?>> {
+public interface IEntityTypeRegistrar extends IRegistrar<EntityType<?>, DeferredEntityType<?>> {
     default <TEntity extends Entity> DeferredEntityType<TEntity> registerEntity(String identifier, EntityType.EntityFactory<TEntity> factory, MobCategory category, Consumer<EntityType.Builder<TEntity>> propertiesModifier) {
         return registerForHolder(identifier, registryName -> {
             var builder = EntityType.Builder.of(factory, category);
             propertiesModifier.accept(builder);
             return builder.build(registryKey(registryName));
-        }, DeferredEntityType::new);
+        });
     }
 
     default <TEntity extends Entity> DeferredEntityType<TEntity> registerEntity(String identifier, EntityType.EntityFactory<TEntity> factory, MobCategory category) {

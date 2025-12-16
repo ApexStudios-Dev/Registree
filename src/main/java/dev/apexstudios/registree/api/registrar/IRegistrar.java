@@ -1,6 +1,7 @@
 package dev.apexstudios.registree.api.registrar;
 
 import dev.apexstudios.registree.api.IRegistree;
+import dev.apexstudios.registree.api.holder.DeferredHolder;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
@@ -15,10 +16,9 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 import net.neoforged.neoforge.common.NeoForgeMod;
-import net.neoforged.neoforge.registries.DeferredHolder;
 import org.jspecify.annotations.Nullable;
 
-public interface IRegistrar<TRegistry> {
+public interface IRegistrar<TRegistry, THolderType extends DeferredHolder<TRegistry, ? extends TRegistry>> {
     IRegistree registree();
 
     default String namespace() {
@@ -119,19 +119,22 @@ public interface IRegistrar<TRegistry> {
         return register(identifier, registryName -> factory.get());
     }
 
-    default <TElement extends TRegistry, THolder extends DeferredHolder<TRegistry, TElement>> THolder registerForHolder(String identifier, Function<Identifier, TRegistry> factory, Function<ResourceKey<TRegistry>, THolder> holderFactory) {
-        return holderFactory.apply(register(identifier, factory));
+    @SuppressWarnings("unchecked")
+    default <TElement extends TRegistry, THolder extends DeferredHolder<TRegistry, TElement>> THolder registerForHolder(String identifier, Function<Identifier, TRegistry> factory) {
+        return (THolder) holder(register(identifier, factory));
     }
 
-    default <TElement extends TRegistry, THolder extends DeferredHolder<TRegistry, TElement>> THolder registerForHolder(String identifier, Supplier<TRegistry> factory, Function<ResourceKey<TRegistry>, THolder> holderFactory) {
-        return registerForHolder(identifier, registryName -> factory.get(), holderFactory);
-    }
-
-    default <TElement extends TRegistry> DeferredHolder<TRegistry, TElement> registerForHolder(String identifier, Function<Identifier, TRegistry> factory) {
-        return registerForHolder(identifier, factory, DeferredHolder::create);
-    }
-
-    default <TElement extends TRegistry> DeferredHolder<TRegistry, TElement> registerForHolder(String identifier, Supplier<TRegistry> factory) {
+    default <TElement extends TRegistry, THolder extends DeferredHolder<TRegistry, TElement>> THolder registerForHolder(String identifier, Supplier<TRegistry> factory) {
         return registerForHolder(identifier, registryName -> factory.get());
+    }
+
+    THolderType holder(ResourceKey<TRegistry> registryKey);
+
+    default THolderType holder(Identifier registryName) {
+        return holder(registryKey(registryName));
+    }
+
+    default THolderType holder(String identifier) {
+        return holder(registryName(identifier));
     }
 }

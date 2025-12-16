@@ -2,6 +2,7 @@ package dev.apexstudios.registree.core.registrar;
 
 import com.google.common.collect.Maps;
 import dev.apexstudios.registree.api.IRegistree;
+import dev.apexstudios.registree.api.holder.DeferredHolder;
 import dev.apexstudios.registree.api.registrar.IRegistrar;
 import dev.apexstudios.registree.core.Deferred;
 import java.util.Collection;
@@ -20,17 +21,19 @@ import net.neoforged.bus.api.EventPriority;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import org.jspecify.annotations.Nullable;
 
-public class Registrar<TRegistry> implements IRegistrar<TRegistry> {
+public class Registrar<TRegistry, THolderType extends DeferredHolder<TRegistry, ? extends TRegistry>> implements IRegistrar<TRegistry, THolderType> {
     private final IRegistree registree;
     private final ResourceKey<? extends Registry<TRegistry>> registryType;
     private final Map<String, Holder.Reference<TRegistry>> holderById = Maps.newHashMap();
     private final Map<String, TRegistry> valueById = Maps.newHashMap();
     private final Map<String, Function<Identifier, TRegistry>> factories = Maps.newHashMap();
     private final Deferred<Registry<TRegistry>> registry = new Deferred<>();
+    private final Function<ResourceKey<TRegistry>, THolderType> holderFactory;
 
-    public Registrar(IRegistree registree, ResourceKey<? extends Registry<TRegistry>> registryType) {
+    public Registrar(IRegistree registree, ResourceKey<? extends Registry<TRegistry>> registryType, Function<ResourceKey<TRegistry>, THolderType> holderFactory) {
         this.registree = registree;
         this.registryType = registryType;
+        this.holderFactory = holderFactory;
 
         registree.event(EventPriority.HIGH, RegisterEvent.class, event -> event.register(registryType, $ -> {
             var registry = Objects.requireNonNull(event.getRegistry(registryType));
@@ -121,5 +124,10 @@ public class Registrar<TRegistry> implements IRegistrar<TRegistry> {
         }
 
         return registryKey(identifier);
+    }
+
+    @Override
+    public THolderType holder(ResourceKey<TRegistry> registryKey) {
+        return holderFactory.apply(registryKey);
     }
 }

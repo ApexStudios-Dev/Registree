@@ -1,6 +1,7 @@
 package dev.apexstudios.registree.api.registrar;
 
 import dev.apexstudios.registree.api.builder.IBlockEntityTypeBuilder;
+import dev.apexstudios.registree.api.holder.DeferredBlock;
 import dev.apexstudios.registree.api.holder.DeferredBlockEntityType;
 import dev.apexstudios.registree.core.builder.BlockEntityTypeBuilder;
 import java.util.function.Supplier;
@@ -8,15 +9,14 @@ import java.util.stream.Stream;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.neoforged.neoforge.registries.DeferredHolder;
 
-public interface IBlockEntityTypeRegistrar extends IRegistrar<BlockEntityType<?>> {
+public interface IBlockEntityTypeRegistrar extends IRegistrar<BlockEntityType<?>, DeferredBlockEntityType<?>> {
     @SuppressWarnings("unchecked")
     default <TBlockEntity extends BlockEntity> DeferredBlockEntityType<TBlockEntity> registerBlockEntity(String identifier, BlockEntityType.BlockEntitySupplier<TBlockEntity> factory, boolean onlyOpCanSetNbt, Supplier<? extends Block>... validBlocks) {
         return registerForHolder(identifier, () -> {
             var blocks = Stream.of(validBlocks).map(Supplier::get).toArray(Block[]::new);
             return new BlockEntityType<>(factory, onlyOpCanSetNbt, blocks);
-        }, DeferredBlockEntityType::new);
+        });
     }
 
     @SuppressWarnings("unchecked")
@@ -25,11 +25,11 @@ public interface IBlockEntityTypeRegistrar extends IRegistrar<BlockEntityType<?>
     }
 
     @SuppressWarnings("unchecked")
-    default <TBlockEntity extends BlockEntity> DeferredBlockEntityType<TBlockEntity> registerBlockEntity(DeferredHolder<Block, ? extends Block> block, BlockEntityType.BlockEntitySupplier<TBlockEntity> factory, boolean onlyOpCanSetNbt) {
+    default <TBlockEntity extends BlockEntity> DeferredBlockEntityType<TBlockEntity> registerBlockEntity(DeferredBlock<? extends Block> block, BlockEntityType.BlockEntitySupplier<TBlockEntity> factory, boolean onlyOpCanSetNbt) {
         return registerBlockEntity(block.getId().getPath(), factory, onlyOpCanSetNbt, block);
     }
 
-    default <TBlockEntity extends BlockEntity> DeferredBlockEntityType<TBlockEntity> registerBlockEntity(DeferredHolder<Block, ? extends Block> block, BlockEntityType.BlockEntitySupplier<TBlockEntity> factory) {
+    default <TBlockEntity extends BlockEntity> DeferredBlockEntityType<TBlockEntity> registerBlockEntity(DeferredBlock<? extends Block> block, BlockEntityType.BlockEntitySupplier<TBlockEntity> factory) {
         return registerBlockEntity(block, factory, false);
     }
 

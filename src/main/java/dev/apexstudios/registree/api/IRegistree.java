@@ -29,7 +29,7 @@ public interface IRegistree {
         return Identifier.fromNamespaceAndPath(namespace(), identifier);
     }
 
-    <TRegistry> IRegistrar<TRegistry> registrar(ResourceKey<? extends Registry<TRegistry>> registryType);
+    <TRegistry> IRegistrar<TRegistry, ?> registrar(ResourceKey<? extends Registry<TRegistry>> registryType);
 
     default IBlockRegistrar blocks() {
         return (IBlockRegistrar) registrar(Registries.BLOCK);

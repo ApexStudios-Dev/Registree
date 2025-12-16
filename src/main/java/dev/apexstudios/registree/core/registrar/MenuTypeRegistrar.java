@@ -2,6 +2,7 @@ package dev.apexstudios.registree.core.registrar;
 
 import dev.apexstudios.registree.api.IRegistree;
 import dev.apexstudios.registree.api.holder.DeferredMenuType;
+import dev.apexstudios.registree.api.holder.Holders;
 import dev.apexstudios.registree.api.registrar.IMenuTypeRegistrar;
 import java.util.function.Supplier;
 import net.minecraft.client.gui.screens.MenuScreens;
@@ -13,9 +14,9 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 
-public class MenuTypeRegistrar extends Registrar<MenuType<?>> implements IMenuTypeRegistrar {
+public class MenuTypeRegistrar extends Registrar<MenuType<?>, DeferredMenuType<?>> implements IMenuTypeRegistrar {
     public MenuTypeRegistrar(IRegistree registree) {
-        super(registree, Registries.MENU);
+        super(registree, Registries.MENU, Holders::createMenuType);
     }
 
     @Override

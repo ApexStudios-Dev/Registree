@@ -29,7 +29,7 @@ public class BlockEntityTypeBuilder<TBlockEntity extends BlockEntity> extends Bu
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     public BlockEntityTypeBuilder(IBlockEntityTypeRegistrar registrar, String identifier, BlockEntityType.BlockEntitySupplier<TBlockEntity> blockEntityFactory) {
-        super(registrar, identifier, DeferredBlockEntityType::new);
+        super(registrar, identifier);
 
         this.blockEntityFactory = blockEntityFactory;
 

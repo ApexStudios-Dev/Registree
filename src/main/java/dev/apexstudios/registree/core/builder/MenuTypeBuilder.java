@@ -21,7 +21,7 @@ public class MenuTypeBuilder<TMenu extends AbstractContainerMenu> extends Builde
     @Nullable private Supplier<Supplier<MenuScreens.ScreenConstructor<TMenu, ? extends Screen>>> screenFactory = null;
 
     public MenuTypeBuilder(IMenuTypeRegistrar registrar, String identifier, MenuType.MenuSupplier<TMenu> factory) {
-        super(registrar, identifier, DeferredMenuType::new);
+        super(registrar, identifier);
 
         this.factory = factory;
 

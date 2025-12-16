@@ -5,6 +5,7 @@ import dev.apexstudios.registree.api.builder.IBlockBuilder;
 import dev.apexstudios.registree.api.builder.IBlockEntityTypeBuilder;
 import dev.apexstudios.registree.api.builder.IBuilderContext;
 import dev.apexstudios.registree.api.builder.IItemBuilder;
+import dev.apexstudios.registree.api.holder.DeferredBlock;
 import dev.apexstudios.registree.api.registrar.IBlockRegistrar;
 import java.util.Map;
 import java.util.function.BiConsumer;
@@ -24,7 +25,6 @@ import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.extensions.common.IClientBlockExtensions;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
-import net.neoforged.neoforge.registries.DeferredBlock;
 import org.jspecify.annotations.Nullable;
 
 public class BlockBuilder<TBlock extends Block> extends Builder<Block, TBlock, DeferredBlock<TBlock>, IBlockBuilder<TBlock>> implements IBlockBuilder<TBlock> {
@@ -37,7 +37,7 @@ public class BlockBuilder<TBlock extends Block> extends Builder<Block, TBlock, D
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     public BlockBuilder(IBlockRegistrar registrar, String identifier, Function<BlockBehaviour.Properties, TBlock> factory) {
-        super(registrar, identifier, DeferredBlock::createBlock);
+        super(registrar, identifier);
 
         this.factory = factory;
 
