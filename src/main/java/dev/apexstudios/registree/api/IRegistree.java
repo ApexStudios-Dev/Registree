@@ -2,6 +2,7 @@ package dev.apexstudios.registree.api;
 
 import dev.apexstudios.registree.api.registrar.IBlockEntityTypeRegistrar;
 import dev.apexstudios.registree.api.registrar.IBlockRegistrar;
+import dev.apexstudios.registree.api.registrar.ICreativeModeTabRegistrar;
 import dev.apexstudios.registree.api.registrar.IEntityTypeRegistrar;
 import dev.apexstudios.registree.api.registrar.IGameRuleRegistrar;
 import dev.apexstudios.registree.api.registrar.IItemRegistrar;
@@ -53,6 +54,10 @@ public interface IRegistree {
 
     default IGameRuleRegistrar gameRules() {
         return (IGameRuleRegistrar) registrar(Registries.GAME_RULE);
+    }
+
+    default ICreativeModeTabRegistrar creativeModeTabs() {
+        return (ICreativeModeTabRegistrar) registrar(Registries.CREATIVE_MODE_TAB);
     }
 
     void register(IEventBus modBus);
