@@ -3,6 +3,7 @@ package dev.apexstudios.registree.api;
 import dev.apexstudios.registree.api.registrar.IBlockEntityTypeRegistrar;
 import dev.apexstudios.registree.api.registrar.IBlockRegistrar;
 import dev.apexstudios.registree.api.registrar.IEntityTypeRegistrar;
+import dev.apexstudios.registree.api.registrar.IGameRuleRegistrar;
 import dev.apexstudios.registree.api.registrar.IItemRegistrar;
 import dev.apexstudios.registree.api.registrar.IMenuTypeRegistrar;
 import dev.apexstudios.registree.api.registrar.IRegistrar;
@@ -48,6 +49,10 @@ public interface IRegistree {
 
     default IMenuTypeRegistrar menuTypes() {
         return (IMenuTypeRegistrar) registrar(Registries.MENU);
+    }
+
+    default IGameRuleRegistrar gameRules() {
+        return (IGameRuleRegistrar) registrar(Registries.GAME_RULE);
     }
 
     void register(IEventBus modBus);
