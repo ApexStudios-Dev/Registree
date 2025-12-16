@@ -89,6 +89,12 @@ public class BlockBuilder<TBlock extends Block> extends Builder<Block, TBlock, D
     }
 
     @Override
+    public IBlockBuilder<TBlock> blockColor(Supplier<Supplier<BlockColor>> blockColor) {
+        this.blockColor = blockColor;
+        return this;
+    }
+
+    @Override
     public IBlockBuilder<TBlock> extensions(Supplier<Supplier<IClientBlockExtensions>> clientExtensions) {
         this.clientExtensions = clientExtensions;
         return this;

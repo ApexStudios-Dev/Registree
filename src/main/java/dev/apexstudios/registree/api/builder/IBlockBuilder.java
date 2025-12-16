@@ -5,6 +5,7 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import net.minecraft.client.color.block.BlockColor;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
@@ -48,6 +49,8 @@ public interface IBlockBuilder<TBlock extends Block> extends IBuilder<Block, TBl
     }
 
     <TCapability, TContext extends @Nullable Object> IBlockBuilder<TBlock> capability(BlockCapability<TCapability, TContext> capability, IBlockCapabilityProvider<TCapability, TContext> capabilityProvider);
+
+    IBlockBuilder<TBlock> blockColor(Supplier<Supplier<BlockColor>> blockColor);
 
     IBlockBuilder<TBlock> extensions(Supplier<Supplier<IClientBlockExtensions>> clientExtensions);
 
