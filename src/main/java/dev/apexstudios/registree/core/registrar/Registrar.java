@@ -11,6 +11,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
@@ -22,6 +23,7 @@ import org.jspecify.annotations.Nullable;
 public class Registrar<TRegistry> implements IRegistrar<TRegistry> {
     private final IRegistree registree;
     private final ResourceKey<? extends Registry<TRegistry>> registryType;
+    private final Map<String, Holder.Reference<TRegistry>> holderById = Maps.newHashMap();
     private final Map<String, TRegistry> valueById = Maps.newHashMap();
     private final Map<String, Function<Identifier, TRegistry>> factories = Maps.newHashMap();
     private final Deferred<Registry<TRegistry>> registry = new Deferred<>();
@@ -30,15 +32,17 @@ public class Registrar<TRegistry> implements IRegistrar<TRegistry> {
         this.registree = registree;
         this.registryType = registryType;
 
-        registree.event(EventPriority.HIGH, RegisterEvent.class, event -> event.register(registryType, helper -> {
-                for(var entry : factories.entrySet()) {
+        registree.event(EventPriority.HIGH, RegisterEvent.class, event -> event.register(registryType, $ -> {
+            var registry = Objects.requireNonNull(event.getRegistry(registryType));
+
+            for(var entry : factories.entrySet()) {
                 var identifier = entry.getKey();
                 var registryName = registryName(identifier);
                 var value = entry.getValue().apply(registryName);
 
-                helper.register(registryName, value);
+                var holder = Registry.registerForHolder(registry, registryName, value);
 
-                if(valueById.putIfAbsent(identifier, value) != null) {
+                if(valueById.putIfAbsent(identifier, value) != null || holderById.putIfAbsent(identifier, holder) != null) {
                     throw Util.pauseInIde(new IllegalStateException("Illegal " + registryType().identifier() + " registration: " + registryName + " (Duplicate entry)"));
                 }
             }
@@ -46,7 +50,7 @@ public class Registrar<TRegistry> implements IRegistrar<TRegistry> {
             factories.clear();
         }));
 
-        registree.event(EventPriority.LOW, RegisterEvent.class, event -> event.register(registryType, helper -> registry.invoke(Objects.requireNonNull(event.getRegistry(registryType)))));
+        registree.event(EventPriority.LOW, RegisterEvent.class, event -> event.register(registryType, $ -> registry.invoke(Objects.requireNonNull(event.getRegistry(registryType)))));
     }
 
     protected void defer(Consumer<Registry<TRegistry>> listener) {
@@ -80,12 +84,22 @@ public class Registrar<TRegistry> implements IRegistrar<TRegistry> {
 
     @Override
     public boolean containsKey(String identifier) {
-        return valueById.containsKey(identifier);
+        return valueById.containsKey(identifier) || holderById.containsKey(identifier);
     }
 
     @Override
     public boolean containsValue(TRegistry value) {
         return valueById.containsValue(value);
+    }
+
+    @Override
+    public Holder.@Nullable Reference<TRegistry> getHolder(String identifier) {
+        return holderById.get(identifier);
+    }
+
+    @Override
+    public Collection<Holder.Reference<TRegistry>> holders() {
+        return Collections.unmodifiableCollection(holderById.values());
     }
 
     @SuppressWarnings("DataFlowIssue")
@@ -102,7 +116,7 @@ public class Registrar<TRegistry> implements IRegistrar<TRegistry> {
 
     @Override
     public ResourceKey<TRegistry> register(String identifier, Function<Identifier, TRegistry> factory) {
-        if(valueById.containsKey(identifier) || factories.putIfAbsent(identifier, factory) != null) {
+        if(containsKey(identifier) || factories.putIfAbsent(identifier, factory) != null) {
             throw Util.pauseInIde(new IllegalStateException("Illegal " + registryType().identifier() + " registration: " + registryName(identifier) + " (Duplicate entry)"));
         }
 

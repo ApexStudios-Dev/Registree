@@ -9,6 +9,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
+import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
@@ -73,17 +74,34 @@ public interface IRegistrar<TRegistry> {
         return Objects.requireNonNull(get(identifier));
     }
 
+    Collection<TRegistry> values();
+
     default Stream<TRegistry> stream() {
         return values().stream();
     }
 
-    Collection<TRegistry> values();
+    boolean containsValue(TRegistry value);
+
+    Holder.@Nullable Reference<TRegistry> getHolder(String identifier);
+
+    @SuppressWarnings("NullableProblems")
+    default Optional<Holder.Reference<TRegistry>> lookupHolder(String identifier) {
+        return Optional.ofNullable(getHolder(identifier));
+    }
+
+    default Holder.Reference<TRegistry> getHolderOrThrow(String identifier) {
+        return Objects.requireNonNull(getHolder(identifier));
+    }
+
+    Collection<Holder.Reference<TRegistry>> holders();
+
+    default Stream<Holder.Reference<TRegistry>> streamHolders() {
+        return holders().stream();
+    }
 
     Set<String> keySet();
 
     boolean containsKey(String identifier);
-
-    boolean containsValue(TRegistry value);
 
     void onRegister(ResourceKey<TRegistry> registryKey, Consumer<TRegistry> listener);
 
