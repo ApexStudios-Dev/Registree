@@ -16,7 +16,7 @@ import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.level.block.Block;
 import org.apache.commons.lang3.function.Consumers;
 
-public interface IItemRegistrar extends IRegistrar<Item, DeferredItem<?>> {
+public interface IItemRegistrar extends IRegistrar.WithHolder<Item, DeferredItem<?>> {
     String SPAWN_EGG_SUFFIX = "_spawn_egg";
 
     default <TItem extends Item> DeferredItem<TItem> registerItem(String identifier, Function<Item.Properties, TItem> factory, Consumer<Item.Properties> propertiesModifier) {

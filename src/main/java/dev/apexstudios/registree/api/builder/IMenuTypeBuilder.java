@@ -10,7 +10,7 @@ import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 
-public interface IMenuTypeBuilder<TMenu extends AbstractContainerMenu> extends IBuilder<MenuType<?>, MenuType<TMenu>, DeferredMenuType<TMenu>, IMenuTypeBuilder<TMenu>> {
+public interface IMenuTypeBuilder<TMenu extends AbstractContainerMenu> extends IBuilder.WithHolder<MenuType<?>, MenuType<TMenu>, DeferredMenuType<TMenu>, IMenuTypeBuilder<TMenu>> {
     IMenuTypeBuilder<TMenu> requiredFeatures(FeatureFlagSet requiredFeatures);
 
     default IMenuTypeBuilder<TMenu> requiredFeature(FeatureFlag requiredFeature) {

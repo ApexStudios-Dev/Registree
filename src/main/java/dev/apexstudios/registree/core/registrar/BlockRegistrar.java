@@ -7,7 +7,7 @@ import dev.apexstudios.registree.api.registrar.IBlockRegistrar;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.Block;
 
-public class BlockRegistrar extends Registrar<Block, DeferredBlock<?>> implements IBlockRegistrar {
+public class BlockRegistrar extends Registrar.WithHolder<Block, DeferredBlock<?>> implements IBlockRegistrar {
     public BlockRegistrar(IRegistree registree) {
         super(registree, Registries.BLOCK, Holders::createBlock);
     }

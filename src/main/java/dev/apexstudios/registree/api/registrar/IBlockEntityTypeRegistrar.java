@@ -10,7 +10,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 
-public interface IBlockEntityTypeRegistrar extends IRegistrar<BlockEntityType<?>, DeferredBlockEntityType<?>> {
+public interface IBlockEntityTypeRegistrar extends IRegistrar.WithHolder<BlockEntityType<?>, DeferredBlockEntityType<?>> {
     @SuppressWarnings("unchecked")
     default <TBlockEntity extends BlockEntity> DeferredBlockEntityType<TBlockEntity> registerBlockEntity(String identifier, BlockEntityType.BlockEntitySupplier<TBlockEntity> factory, boolean onlyOpCanSetNbt, Supplier<? extends Block>... validBlocks) {
         return registerForHolder(identifier, () -> {

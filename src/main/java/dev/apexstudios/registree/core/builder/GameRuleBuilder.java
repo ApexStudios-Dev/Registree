@@ -15,7 +15,7 @@ import net.minecraft.world.level.gamerules.GameRuleCategory;
 import net.minecraft.world.level.gamerules.GameRuleType;
 import net.minecraft.world.level.gamerules.GameRules;
 
-public abstract class GameRuleBuilder<TType, TSelf extends IGameRuleBuilder<TType, TSelf>> extends Builder<GameRule<?>, GameRule<TType>, DeferredGameRule<TType>, TSelf> implements IGameRuleBuilder<TType, TSelf> {
+public abstract class GameRuleBuilder<TType, TSelf extends IGameRuleBuilder<TType, TSelf>> extends Builder.WithHolder<IGameRuleRegistrar, GameRule<?>, GameRule<TType>, DeferredGameRule<TType>, TSelf> implements IGameRuleBuilder<TType, TSelf> {
     private final GameRuleCategory category;
     private final GameRuleType type;
     private final ArgumentType<TType> argumentType;

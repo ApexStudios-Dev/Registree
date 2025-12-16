@@ -22,7 +22,7 @@ import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import org.jspecify.annotations.Nullable;
 
-public class ItemBuilder<TItem extends Item> extends Builder<Item, TItem, DeferredItem<TItem>, IItemBuilder<TItem>> implements IItemBuilder<TItem> {
+public class ItemBuilder<TItem extends Item> extends Builder.WithHolder<IItemRegistrar, Item, TItem, DeferredItem<TItem>, IItemBuilder<TItem>> implements IItemBuilder<TItem> {
     private BiConsumer<IBuilderContext<Item>, Item.Properties> propertiesModifier = (context, properties) -> properties.setId(context.registryKey());
     private final Function<Item.Properties, TItem> factory;
     private final Map<ItemCapability<?, ?>, ICapabilityProvider<ItemStack, ?, ?>> capabilities = Maps.newHashMap();

@@ -2,7 +2,6 @@ package dev.apexstudios.registree.core;
 
 import com.google.common.collect.Maps;
 import dev.apexstudios.registree.api.IRegistree;
-import dev.apexstudios.registree.api.holder.Holders;
 import dev.apexstudios.registree.api.registrar.IRegistrar;
 import dev.apexstudios.registree.core.registrar.BlockEntityTypeRegistrar;
 import dev.apexstudios.registree.core.registrar.BlockRegistrar;
@@ -39,7 +38,7 @@ public class Registree implements IRegistree {
         setRegistrar(Registries.GAME_RULE, () -> new GameRuleRegistrar(this));
     }
 
-    protected <TRegistry> void setRegistrar(ResourceKey<? extends Registry<TRegistry>> registryType, Supplier<IRegistrar<TRegistry, ?>> registrar) {
+    protected <TRegistry> void setRegistrar(ResourceKey<? extends Registry<TRegistry>> registryType, Supplier<IRegistrar<TRegistry>> registrar) {
         getRegistrar(registryType).factory = registrar;
     }
 
@@ -53,7 +52,7 @@ public class Registree implements IRegistree {
     }
 
     @Override
-    public <TRegistry> IRegistrar<TRegistry, ?> registrar(ResourceKey<? extends Registry<TRegistry>> registryType) {
+    public <TRegistry> IRegistrar<TRegistry> registrar(ResourceKey<? extends Registry<TRegistry>> registryType) {
         return getRegistrar(registryType).get(registryType);
     }
 
@@ -85,13 +84,13 @@ public class Registree implements IRegistree {
     // Call in constructor: `setRegistrar(Registries.BLOCK, () -> new MyBlockRegistrar(this));`
     // Overload: ``public MyBlockRegistrar blocks() { return (MyBlockRegistrar) IRegistree.super.blocks(); }
     private final class LazyRegistrar<TRegistry> {
-        @Nullable private IRegistrar<TRegistry, ?> registrar = null;
-        @Nullable private Supplier<IRegistrar<TRegistry, ?>> factory;
+        @Nullable private IRegistrar<TRegistry> registrar = null;
+        @Nullable private Supplier<IRegistrar<TRegistry>> factory;
 
-        public IRegistrar<TRegistry, ?> get(ResourceKey<? extends Registry<TRegistry>> registryType) {
+        public IRegistrar<TRegistry> get(ResourceKey<? extends Registry<TRegistry>> registryType) {
             if(registrar == null) {
                 if(factory == null) {
-                    registrar = new Registrar<>(Registree.this, registryType, Holders::create);
+                    registrar = new Registrar<>(Registree.this, registryType);
                 } else {
                     registrar = factory.get();
                     factory = null;

@@ -18,7 +18,7 @@ import net.neoforged.neoforge.capabilities.ICapabilityProvider;
 import org.apache.commons.lang3.function.Consumers;
 import org.jspecify.annotations.Nullable;
 
-public interface IEntityTypeBuilder<TEntity extends Entity> extends IBuilder<EntityType<?>, EntityType<TEntity>, DeferredEntityType<TEntity>, IEntityTypeBuilder<TEntity>> {
+public interface IEntityTypeBuilder<TEntity extends Entity> extends IBuilder.WithHolder<EntityType<?>, EntityType<TEntity>, DeferredEntityType<TEntity>, IEntityTypeBuilder<TEntity>> {
     IEntityTypeBuilder<TEntity> properties(BiConsumer<IBuilderContext<EntityType<?>>, EntityType.Builder<TEntity>> propertiesModifier);
 
     default IEntityTypeBuilder<TEntity> properties(Consumer<EntityType.Builder<TEntity>> propertiesModifier) {

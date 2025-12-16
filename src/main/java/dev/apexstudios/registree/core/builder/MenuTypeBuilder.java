@@ -15,7 +15,7 @@ import net.minecraft.world.inventory.MenuType;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import org.jspecify.annotations.Nullable;
 
-public class MenuTypeBuilder<TMenu extends AbstractContainerMenu> extends Builder<MenuType<?>, MenuType<TMenu>, DeferredMenuType<TMenu>, IMenuTypeBuilder<TMenu>> implements IMenuTypeBuilder<TMenu> {
+public class MenuTypeBuilder<TMenu extends AbstractContainerMenu> extends Builder.WithHolder<IMenuTypeRegistrar, MenuType<?>, MenuType<TMenu>, DeferredMenuType<TMenu>, IMenuTypeBuilder<TMenu>> implements IMenuTypeBuilder<TMenu> {
     private final MenuType.MenuSupplier<TMenu> factory;
     private FeatureFlagSet requiredFeatures = FeatureFlags.DEFAULT_FLAGS;
     @Nullable private Supplier<Supplier<MenuScreens.ScreenConstructor<TMenu, ? extends Screen>>> screenFactory = null;

@@ -30,7 +30,7 @@ import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
 import org.jspecify.annotations.Nullable;
 
-public class EntityTypeBuilder<TEntity extends Entity> extends Builder<EntityType<?>, EntityType<TEntity>, DeferredEntityType<TEntity>, IEntityTypeBuilder<TEntity>> implements IEntityTypeBuilder<TEntity> {
+public class EntityTypeBuilder<TEntity extends Entity> extends Builder.WithHolder<IEntityTypeRegistrar, EntityType<?>, EntityType<TEntity>, DeferredEntityType<TEntity>, IEntityTypeBuilder<TEntity>> implements IEntityTypeBuilder<TEntity> {
     private final EntityType.EntityFactory<TEntity> factory;
     private final MobCategory category;
     private BiConsumer<IBuilderContext<EntityType<?>>, EntityType.Builder<TEntity>> propertiesModifier = (context, properties) -> { };

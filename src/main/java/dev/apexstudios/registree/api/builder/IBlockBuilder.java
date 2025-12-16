@@ -19,7 +19,7 @@ import net.neoforged.neoforge.client.extensions.common.IClientBlockExtensions;
 import org.apache.commons.lang3.function.Consumers;
 import org.jspecify.annotations.Nullable;
 
-public interface IBlockBuilder<TBlock extends Block> extends IBuilder<Block, TBlock, DeferredBlock<TBlock>, IBlockBuilder<TBlock>> {
+public interface IBlockBuilder<TBlock extends Block> extends IBuilder.WithHolder<Block, TBlock, DeferredBlock<TBlock>, IBlockBuilder<TBlock>> {
     IBlockBuilder<TBlock> initialProperties(Function<IBuilderContext<Block>, BlockBehaviour.Properties> initialProperties);
 
     default IBlockBuilder<TBlock> initialProperties(Supplier<BlockBehaviour.Properties> initialProperties) {

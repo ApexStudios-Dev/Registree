@@ -7,7 +7,7 @@ import dev.apexstudios.registree.api.registrar.IEntityTypeRegistrar;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.EntityType;
 
-public class EntityTypeRegistrar extends Registrar<EntityType<?>, DeferredEntityType<?>> implements IEntityTypeRegistrar {
+public class EntityTypeRegistrar extends Registrar.WithHolder<EntityType<?>, DeferredEntityType<?>> implements IEntityTypeRegistrar {
     public EntityTypeRegistrar(IRegistree registree) {
         super(registree, Registries.ENTITY_TYPE, Holders::createEntityType);
     }

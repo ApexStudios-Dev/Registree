@@ -8,48 +8,73 @@ import dev.apexstudios.registree.core.Deferred;
 import java.util.function.Consumer;
 import net.minecraft.resources.ResourceKey;
 
-public abstract class Builder<TRegistry, TElement extends TRegistry, THolder extends DeferredHolder<TRegistry, TElement>, TSelf extends IBuilder<TRegistry, TElement, THolder, TSelf>> implements IBuilder<TRegistry, TElement, THolder, TSelf> {
-    protected final IRegistrar<TRegistry, ? super THolder> registrar;
-    private final String identifier;
-    private final Deferred<IBuilderContext.WithValue<TRegistry, TElement>> deferred = new Deferred<>();
+public abstract class Builder<TRegistrar extends IRegistrar<TRegistry>, TRegistry, TRegistered extends TRegistry, TResult, TSelf extends IBuilder<TRegistry, TRegistered, TResult, TSelf>> implements IBuilder<TRegistry, TRegistered, TResult, TSelf> {
+    protected final TRegistrar registrar;
+    protected final String identifier;
 
-    public Builder(IRegistrar<TRegistry, ? super THolder> registrar, String identifier) {
+    public Builder(TRegistrar registrar, String identifier) {
         this.registrar = registrar;
         this.identifier = identifier;
     }
 
-    @SuppressWarnings("unchecked")
-    protected TSelf defer(Consumer<IBuilderContext.WithValue<TRegistry, TElement>> listener) {
-        deferred.defer(listener);
-        return (TSelf) this;
+    protected abstract TRegistry createElement(IBuilderContext<TRegistry> context);
+
+    public static abstract class Basic<TRegistrar extends IRegistrar<TRegistry>, TRegistry, TSelf extends IBuilder.Basic<TRegistry, TSelf>> extends Builder<TRegistrar, TRegistry, TRegistry, ResourceKey<TRegistry>, TSelf> implements IBuilder.Basic<TRegistry, TSelf> {
+        public Basic(TRegistrar registrar, String identifier) {
+            super(registrar, identifier);
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public TSelf onRegister(Consumer<TRegistry> listener) {
+            registrar.onRegister(identifier, listener);
+            return (TSelf) this;
+        }
+
+        @Override
+        public ResourceKey<TRegistry> register() {
+            return registrar.register(identifier, registryName -> createElement(IBuilderContext.create(registrar.registryKey(registryName))));
+        }
     }
 
-    protected abstract TElement createElement(IBuilderContext<TRegistry> context);
+    public static abstract class WithHolder<TRegistrar extends IRegistrar.WithHolder<TRegistry, ? super THolder>, TRegistry, TElement extends TRegistry, THolder extends DeferredHolder<TRegistry, TElement>, TSelf extends IBuilder.WithHolder<TRegistry, TElement, THolder, TSelf>> extends Builder<TRegistrar, TRegistry, TElement, THolder, TSelf> implements IBuilder.WithHolder<TRegistry, TElement, THolder, TSelf> {
+        private final Deferred<IBuilderContext.WithValue<TRegistry, TElement>> deferred = new Deferred<>();
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public TSelf onRegister(Consumer<TElement> listener) {
-        registrar.onRegister(identifier, value -> listener.accept((TElement) value));
-        return (TSelf) this;
-    }
+        public WithHolder(TRegistrar registrar, String identifier) {
+            super(registrar, identifier);
+        }
 
-    @Override
-    public THolder register() {
-        var context = IBuilderContext.create(registrar.registryKey(identifier));
-        var holder = registrar.<TElement, THolder>registerForHolder(identifier, () -> createElement(context));
+        @SuppressWarnings("unchecked")
+        protected TSelf defer(Consumer<IBuilderContext.WithValue<TRegistry, TElement>> listener) {
+            deferred.defer(listener);
+            return (TSelf) this;
+        }
 
-        deferred.invoke(new IBuilderContext.WithValue<>() {
-            @Override
-            public TElement value() {
-                return holder.value();
-            }
+        @SuppressWarnings("unchecked")
+        @Override
+        public TSelf onRegister(Consumer<TElement> listener) {
+            registrar.onRegister(identifier, value -> listener.accept((TElement) value));
+            return (TSelf) this;
+        }
 
-            @Override
-            public ResourceKey<TRegistry> registryKey() {
-                return context.registryKey();
-            }
-        });
+        @Override
+        public THolder register() {
+            var context = IBuilderContext.create(registrar.registryKey(identifier));
+            var holder = registrar.<TElement, THolder>registerForHolder(identifier, () -> createElement(context));
 
-        return holder;
+            deferred.invoke(new IBuilderContext.WithValue<>() {
+                @Override
+                public TElement value() {
+                    return holder.value();
+                }
+
+                @Override
+                public ResourceKey<TRegistry> registryKey() {
+                    return context.registryKey();
+                }
+            });
+
+            return holder;
+        }
     }
 }

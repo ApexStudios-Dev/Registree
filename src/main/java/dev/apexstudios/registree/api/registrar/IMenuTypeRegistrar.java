@@ -13,7 +13,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.neoforged.neoforge.network.IContainerFactory;
 
-public interface IMenuTypeRegistrar extends IRegistrar<MenuType<?>, DeferredMenuType<?>> {
+public interface IMenuTypeRegistrar extends IRegistrar.WithHolder<MenuType<?>, DeferredMenuType<?>> {
     default <TMenu extends AbstractContainerMenu> DeferredMenuType<TMenu> registerMenu(String identifier, MenuType.MenuSupplier<TMenu> factory, FeatureFlagSet requiredFeatures) {
         return registerForHolder(identifier, () -> new MenuType<>(factory, requiredFeatures));
     }

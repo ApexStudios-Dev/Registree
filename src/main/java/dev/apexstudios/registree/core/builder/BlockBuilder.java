@@ -27,7 +27,7 @@ import net.neoforged.neoforge.client.extensions.common.IClientBlockExtensions;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import org.jspecify.annotations.Nullable;
 
-public class BlockBuilder<TBlock extends Block> extends Builder<Block, TBlock, DeferredBlock<TBlock>, IBlockBuilder<TBlock>> implements IBlockBuilder<TBlock> {
+public class BlockBuilder<TBlock extends Block> extends Builder.WithHolder<IBlockRegistrar, Block, TBlock, DeferredBlock<TBlock>, IBlockBuilder<TBlock>> implements IBlockBuilder<TBlock> {
     private Function<IBuilderContext<Block>, BlockBehaviour.Properties> initialProperties = context -> BlockBehaviour.Properties.ofLegacyCopy(Blocks.STONE);
     private BiConsumer<IBuilderContext<Block>, BlockBehaviour.Properties> propertiesModifier = (context, properties) -> properties.setId(context.registryKey());
     private final Function<BlockBehaviour.Properties, TBlock> factory;

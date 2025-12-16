@@ -12,7 +12,7 @@ import net.neoforged.neoforge.client.IItemDecorator;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import org.jspecify.annotations.Nullable;
 
-public interface IItemBuilder<TItem extends Item> extends IBuilder<Item, TItem, DeferredItem<TItem>, IItemBuilder<TItem>> {
+public interface IItemBuilder<TItem extends Item> extends IBuilder.WithHolder<Item, TItem, DeferredItem<TItem>, IItemBuilder<TItem>> {
     IItemBuilder<TItem> properties(BiConsumer<IBuilderContext<Item>, Item.Properties> propertiesModifier);
 
     default IItemBuilder<TItem> properties(Consumer<Item.Properties> propertiesModifier) {

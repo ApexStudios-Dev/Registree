@@ -11,7 +11,7 @@ import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.capabilities.ICapabilityProvider;
 import org.jspecify.annotations.Nullable;
 
-public interface IBlockEntityTypeBuilder<TBlockEntity extends BlockEntity> extends IBuilder<BlockEntityType<?>, BlockEntityType<TBlockEntity>, DeferredBlockEntityType<TBlockEntity>, IBlockEntityTypeBuilder<TBlockEntity>> {
+public interface IBlockEntityTypeBuilder<TBlockEntity extends BlockEntity> extends IBuilder.WithHolder<BlockEntityType<?>, BlockEntityType<TBlockEntity>, DeferredBlockEntityType<TBlockEntity>, IBlockEntityTypeBuilder<TBlockEntity>> {
     IBlockEntityTypeBuilder<TBlockEntity> validBlock(Supplier<? extends Block> block);
 
     @SuppressWarnings("unchecked")

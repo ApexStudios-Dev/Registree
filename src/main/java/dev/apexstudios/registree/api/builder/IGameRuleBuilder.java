@@ -7,7 +7,7 @@ import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.level.gamerules.GameRule;
 import net.minecraft.world.level.gamerules.GameRules;
 
-public interface IGameRuleBuilder<TType, TSelf extends IGameRuleBuilder<TType, TSelf>> extends IBuilder<GameRule<?>, GameRule<TType>, DeferredGameRule<TType>, TSelf> {
+public interface IGameRuleBuilder<TType, TSelf extends IGameRuleBuilder<TType, TSelf>> extends IBuilder.WithHolder<GameRule<?>, GameRule<TType>, DeferredGameRule<TType>, TSelf> {
     TSelf requiredFeatures(FeatureFlagSet requiredFeatures);
 
     default TSelf requiredFeature(FeatureFlag requiredFeature) {

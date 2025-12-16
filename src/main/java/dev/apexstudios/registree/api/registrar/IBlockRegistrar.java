@@ -8,7 +8,7 @@ import java.util.function.Supplier;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 
-public interface IBlockRegistrar extends IRegistrar<Block, DeferredBlock<?>> {
+public interface IBlockRegistrar extends IRegistrar.WithHolder<Block, DeferredBlock<?>> {
     default <TBlock extends Block> DeferredBlock<TBlock> registerBlock(String identifier, Function<BlockBehaviour.Properties, TBlock> factory, Supplier<BlockBehaviour.Properties> propertiesFactory) {
         return registerForHolder(identifier, registryName -> factory.apply(propertiesFactory.get().setId(registryKey(registryName))));
     }

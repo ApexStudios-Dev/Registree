@@ -18,7 +18,7 @@ import net.minecraft.tags.TagKey;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import org.jspecify.annotations.Nullable;
 
-public interface IRegistrar<TRegistry, THolderType extends DeferredHolder<TRegistry, ? extends TRegistry>> {
+public interface IRegistrar<TRegistry> {
     IRegistree registree();
 
     default String namespace() {
@@ -82,23 +82,6 @@ public interface IRegistrar<TRegistry, THolderType extends DeferredHolder<TRegis
 
     boolean containsValue(TRegistry value);
 
-    Holder.@Nullable Reference<TRegistry> getHolder(String identifier);
-
-    @SuppressWarnings("NullableProblems")
-    default Optional<Holder.Reference<TRegistry>> lookupHolder(String identifier) {
-        return Optional.ofNullable(getHolder(identifier));
-    }
-
-    default Holder.Reference<TRegistry> getHolderOrThrow(String identifier) {
-        return Objects.requireNonNull(getHolder(identifier));
-    }
-
-    Collection<Holder.Reference<TRegistry>> holders();
-
-    default Stream<Holder.Reference<TRegistry>> streamHolders() {
-        return holders().stream();
-    }
-
     Set<String> keySet();
 
     boolean containsKey(String identifier);
@@ -119,22 +102,41 @@ public interface IRegistrar<TRegistry, THolderType extends DeferredHolder<TRegis
         return register(identifier, registryName -> factory.get());
     }
 
-    @SuppressWarnings("unchecked")
-    default <TElement extends TRegistry, THolder extends DeferredHolder<TRegistry, TElement>> THolder registerForHolder(String identifier, Function<Identifier, TRegistry> factory) {
-        return (THolder) holder(register(identifier, factory));
-    }
+    interface WithHolder<TRegistry, THolderType extends DeferredHolder<TRegistry, ? extends TRegistry>> extends IRegistrar<TRegistry> {
+        Holder.@Nullable Reference<TRegistry> getHolder(String identifier);
 
-    default <TElement extends TRegistry, THolder extends DeferredHolder<TRegistry, TElement>> THolder registerForHolder(String identifier, Supplier<TRegistry> factory) {
-        return registerForHolder(identifier, registryName -> factory.get());
-    }
+        @SuppressWarnings("NullableProblems")
+        default Optional<Holder.Reference<TRegistry>> lookupHolder(String identifier) {
+            return Optional.ofNullable(getHolder(identifier));
+        }
 
-    THolderType holder(ResourceKey<TRegistry> registryKey);
+        default Holder.Reference<TRegistry> getHolderOrThrow(String identifier) {
+            return Objects.requireNonNull(getHolder(identifier));
+        }
 
-    default THolderType holder(Identifier registryName) {
-        return holder(registryKey(registryName));
-    }
+        Collection<Holder.Reference<TRegistry>> holders();
 
-    default THolderType holder(String identifier) {
-        return holder(registryName(identifier));
+        default Stream<Holder.Reference<TRegistry>> streamHolders() {
+            return holders().stream();
+        }
+
+        @SuppressWarnings("unchecked")
+        default <TElement extends TRegistry, THolder extends DeferredHolder<TRegistry, TElement>> THolder registerForHolder(String identifier, Function<Identifier, TRegistry> factory) {
+            return (THolder) holder(register(identifier, factory));
+        }
+
+        default <TElement extends TRegistry, THolder extends DeferredHolder<TRegistry, TElement>> THolder registerForHolder(String identifier, Supplier<TRegistry> factory) {
+            return registerForHolder(identifier, registryName -> factory.get());
+        }
+
+        THolderType holder(ResourceKey<TRegistry> registryKey);
+
+        default THolderType holder(Identifier registryName) {
+            return holder(registryKey(registryName));
+        }
+
+        default THolderType holder(String identifier) {
+            return holder(registryName(identifier));
+        }
     }
 }

@@ -7,7 +7,7 @@ import dev.apexstudios.registree.api.registrar.IItemRegistrar;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.Item;
 
-public class ItemRegistrar extends Registrar<Item, DeferredItem<?>> implements IItemRegistrar {
+public class ItemRegistrar extends Registrar.WithHolder<Item, DeferredItem<?>> implements IItemRegistrar {
     public ItemRegistrar(IRegistree registree) {
         super(registree, Registries.ITEM, Holders::createItem);
     }
