@@ -10,6 +10,7 @@ apex.extendCompilerErrors()
 
 repositories {
     apex.neoPrMaven(this, 2879)
+    maven("https://maven.apexstudios.dev/prs/ApexGradle/pr12")
 }
 
 tasks.withType<Jar> {
