@@ -6,7 +6,7 @@ plugins {
 group = "dev.apexstudios"
 
 neoForge.enable {
-    version = "26.1.0-alpha.26.1-snapshot-1.20251219.121649"
+    version = "26.1.0.0-alpha.1+snapshot-1"
     isDisableRecompilation = providers.environmentVariable("CI").map(String::toBoolean).getOrElse(false)
 }
 
