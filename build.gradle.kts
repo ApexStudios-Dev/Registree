@@ -1,6 +1,6 @@
 plugins {
-    id("apex-conventions.neoforge") version "0.1.88-beta-pr-12"
-    id("apex-conventions.maven-publishing") version "0.1.88-beta-pr-12"
+    id("apex-conventions.neoforge") version "0.1.90-beta-pr-12"
+    id("apex-conventions.maven-publishing") version "0.1.90-beta-pr-12"
 }
 
 group = "dev.apexstudios"
