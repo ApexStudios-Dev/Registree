@@ -21,9 +21,3 @@ tasks.withType<Jar> {
         )
     }
 }
-
-configurations.all {
-    resolutionStrategy {
-        force("net.neoforged.installertools:installertools:4.0.12")
-    }
-}
