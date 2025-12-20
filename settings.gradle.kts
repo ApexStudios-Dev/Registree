@@ -1,4 +1,6 @@
 pluginManagement {
+    // includeBuild("../../ApexGradle")
+
     repositories {
         maven("https://maven.apexstudios.dev/proxy")
         maven("https://maven.apexstudios.dev/prs/ApexGradle/pr12")

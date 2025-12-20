@@ -1,16 +1,14 @@
 plugins {
-    id("apex-conventions.neoforge") version "0.1.90-beta-pr-12"
-    id("apex-conventions.maven-publishing") version "0.1.90-beta-pr-12"
+    id("apex-conventions.neoforge") version "0.1.91-beta-pr-12"
+    id("apex-conventions.maven-publishing") version "0.1.91-beta-pr-12"
 }
 
 group = "dev.apexstudios"
 
-apex.neoVersion("26.1.0-alpha.26.1-snapshot-1.20251219.121649")
-apex.extendCompilerErrors()
+neoForge.version = "26.1.0-alpha.26.1-snapshot-1.20251219.121649"
 
 repositories {
-    apex.neoPrMaven(this, 2879)
-    maven("https://maven.apexstudios.dev/prs/ApexGradle/pr12")
+    maven("https://prmaven.neoforged.net/NeoForge/pr2879")
 }
 
 tasks.withType<Jar> {
