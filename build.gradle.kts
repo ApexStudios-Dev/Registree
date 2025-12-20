@@ -1,11 +1,14 @@
 plugins {
-    id("apex-conventions.neoforge") version "0.1.91-beta-pr-12"
-    id("apex-conventions.maven-publishing") version "0.1.91-beta-pr-12"
+    id("apex-conventions.neoforge") version "0.1.92-beta-pr-12"
+    id("apex-conventions.maven-publishing") version "0.1.92-beta-pr-12"
 }
 
 group = "dev.apexstudios"
 
-neoForge.version = "26.1.0-alpha.26.1-snapshot-1.20251219.121649"
+neoForge.enable {
+    version = "26.1.0-alpha.26.1-snapshot-1.20251219.121649"
+    isDisableRecompilation = providers.environmentVariable("CI").map(String::toBoolean).getOrElse(false)
+}
 
 repositories {
     maven("https://prmaven.neoforged.net/NeoForge/pr2879")
