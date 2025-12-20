@@ -1,6 +1,7 @@
 pluginManagement {
     repositories {
         maven("https://maven.apexstudios.dev/proxy")
+        maven("https://maven.apexstudios.dev/prs/ApexGradle/pr12")
         gradlePluginPortal()
     }
 }
