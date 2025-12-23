@@ -1,4 +1,4 @@
-package dev.apexstudios.registree.impl;
+package dev.apexstudios.registree.common;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Sets;
@@ -66,7 +66,7 @@ import net.neoforged.neoforge.network.IContainerFactory;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import org.apache.commons.lang3.function.Consumers;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class SimpleRegistree implements Registree {
     protected final String namespace;
@@ -467,7 +467,7 @@ public class SimpleRegistree implements Registree {
     }
 
     @Override
-    public final <TData> DeferredDataComponent<TData> registerDataComponent(String registryName, Codec<TData> codec, StreamCodec<RegistryFriendlyByteBuf, TData> streamCodec) {
+    public final <TData> DeferredDataComponent<TData> registerDataComponent(String registryName, Codec<TData> codec, StreamCodec<? super RegistryFriendlyByteBuf, TData> streamCodec) {
         return Registree.super.registerDataComponent(registryName, codec, streamCodec);
     }
 

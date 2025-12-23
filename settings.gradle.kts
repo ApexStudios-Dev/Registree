@@ -1,7 +1,21 @@
 pluginManagement {
     repositories {
-        maven("https://maven.apexstudios.dev/proxy")
+        maven("https://maven.apexmodder.com/proxy")
         gradlePluginPortal()
+    }
+
+    resolutionStrategy {
+        eachPlugin {
+            if(requested.id.namespace == "apex-conventions") {
+                useVersion("0.1.94")
+            }
+        }
+    }
+}
+
+dependencyResolutionManagement {
+    versionCatalogs.create("libs") {
+        version("neoforge", "26.1.0.1-beta")
     }
 }
 
