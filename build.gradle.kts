@@ -1,11 +1,11 @@
 plugins {
-    id("apex-conventions.neoforge") version "0.1.85"
-    id("apex-conventions.maven-publishing") version "0.1.85"
+    id("apex-conventions.neoforge") version "0.1.87"
+    id("apex-conventions.maven-publishing") version "0.1.87"
 }
 
 group = "dev.apexstudios"
 
-apex.neoVersion("21.11.0-beta", "1.21.10", "2025.10.12")
+apex.neoVersion("26.1.0.0-alpha.1+snapshot-1")
 apex.extendCompilerErrors()
 
 tasks.withType<Jar> {
