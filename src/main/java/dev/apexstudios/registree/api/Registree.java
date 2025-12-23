@@ -8,6 +8,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.Lifecycle;
 import com.mojang.serialization.MapCodec;
 import dev.apexstudios.registree.api.holder.ApexDeferredHolder;
+import dev.apexstudios.registree.api.holder.DeferredAttachmentType;
 import dev.apexstudios.registree.api.holder.DeferredBlock;
 import dev.apexstudios.registree.api.holder.DeferredBlockEntity;
 import dev.apexstudios.registree.api.holder.DeferredDataComponent;
@@ -19,8 +20,7 @@ import dev.apexstudios.registree.api.holder.DeferredItem;
 import dev.apexstudios.registree.api.holder.DeferredMenu;
 import dev.apexstudios.registree.api.holder.DeferredParticleType;
 import dev.apexstudios.registree.api.holder.DeferredRecipeSerializer;
-import dev.apexstudios.registree.impl.SimpleRegistree;
-import dev.apexstudios.registree.impl.type.SimpleRecipeSerializer;
+import dev.apexstudios.registree.common.SimpleRegistree;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.function.BiFunction;
@@ -77,13 +77,15 @@ import net.minecraft.world.level.gamerules.GameRuleTypeVisitor;
 import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.attachment.AttachmentType;
+import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.network.IContainerFactory;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /// Base interface for all Registree types
 ///
@@ -594,7 +596,7 @@ public interface Registree {
     ///
     /// @return The {@link DeferredDataComponent} holding the enqueued {@link DataComponentType} registration
     /// @see #registerDataComponent(String, UnaryOperator)
-    default <TData> DeferredDataComponent<TData> registerDataComponent(String registryName, Codec<TData> codec, StreamCodec<RegistryFriendlyByteBuf, TData> streamCodec) {
+    default <TData> DeferredDataComponent<TData> registerDataComponent(String registryName, Codec<TData> codec, StreamCodec<? super RegistryFriendlyByteBuf, TData> streamCodec) {
         return registerDataComponent(registryName, builder -> builder.persistent(codec).networkSynchronized(streamCodec));
     }
 
@@ -859,7 +861,7 @@ public interface Registree {
     /// @return The {@link DeferredRecipeSerializer} holding the enqueued {@link RecipeSerializer} registration
     /// @see #registerForHolder(ResourceKey, String, Supplier, Function)
     default <TRecipe extends Recipe<?>> DeferredRecipeSerializer<TRecipe> registerRecipeSerializer(String registryName, MapCodec<TRecipe> codec, StreamCodec<RegistryFriendlyByteBuf, TRecipe> streamCodec) {
-        return registerForHolder(Registries.RECIPE_SERIALIZER, registryName, () -> new SimpleRecipeSerializer<>(codec, streamCodec), DeferredRecipeSerializer::new);
+        return registerForHolder(Registries.RECIPE_SERIALIZER, registryName, () -> new RecipeSerializer<>(codec, streamCodec), DeferredRecipeSerializer::new);
     }
     // endregion
 
@@ -982,6 +984,24 @@ public interface Registree {
         return registerIntegerGameRule(registryName, category, defaultValue, min, Integer.MAX_VALUE, requiredFeatures);
     }
     // endregion
+    // endregion
+
+    // region: AttachmentType
+    /// Enqueues a new {@link AttachmentType} registration for the given registry name
+    ///
+    /// @return The {@link DeferredAttachmentType} holding the enqueued {@link AttachmentType} registration
+    /// @see #registerForHolder(ResourceKey, String, Supplier, Function)
+    default <TValue> DeferredAttachmentType<TValue> registerAttachmentType(String registryName, Function<IAttachmentHolder, TValue> defaultValue, UnaryOperator<AttachmentType.Builder<TValue>> modifier) {
+        return registerForHolder(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, registryName, () -> modifier.apply(AttachmentType.builder(defaultValue)).build(), DeferredAttachmentType::new);
+    }
+
+    /// Enqueues a new {@link AttachmentType} registration for the given registry name
+    ///
+    /// @return The {@link DeferredAttachmentType} holding the enqueued {@link AttachmentType} registration
+    /// @see #registerAttachmentType(String, Function, UnaryOperator)
+    default <TValue> DeferredAttachmentType<TValue> registerAttachmentType(String registryName, Supplier<TValue> defaultValue, UnaryOperator<AttachmentType.Builder<TValue>> modifier) {
+        return registerAttachmentType(registryName, holder -> defaultValue.get(), modifier);
+    }
     // endregion
     // endregion
 

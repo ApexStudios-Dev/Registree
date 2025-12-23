@@ -7,13 +7,14 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jspecify.annotations.Nullable;
 
 public final class DeferredBlockEntity<TBlockEntity extends BlockEntity> extends ApexDeferredHolder<BlockEntityType<?>, BlockEntityType<TBlockEntity>> {
     public DeferredBlockEntity(ResourceKey<BlockEntityType<?>> registryKey) {
         super(registryKey);
     }
 
-    public TBlockEntity get(BlockGetter level, BlockPos pos) {
+    public @Nullable TBlockEntity get(BlockGetter level, BlockPos pos) {
         return value().getBlockEntity(level, pos);
     }
 
