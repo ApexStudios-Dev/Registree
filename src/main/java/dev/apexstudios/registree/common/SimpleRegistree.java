@@ -1,4 +1,4 @@
-package dev.apexstudios.registree.impl;
+package dev.apexstudios.registree.common;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Sets;

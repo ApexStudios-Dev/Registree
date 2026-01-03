@@ -1,4 +1,4 @@
-package dev.apexstudios.registree.impl.type;
+package dev.apexstudios.registree.common;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
