@@ -467,7 +467,7 @@ public class SimpleRegistree implements Registree {
     }
 
     @Override
-    public final <TData> DeferredDataComponent<TData> registerDataComponent(String registryName, Codec<TData> codec, StreamCodec<RegistryFriendlyByteBuf, TData> streamCodec) {
+    public final <TData> DeferredDataComponent<TData> registerDataComponent(String registryName, Codec<TData> codec, StreamCodec<? super RegistryFriendlyByteBuf, TData> streamCodec) {
         return Registree.super.registerDataComponent(registryName, codec, streamCodec);
     }
 

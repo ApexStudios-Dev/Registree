@@ -594,7 +594,7 @@ public interface Registree {
     ///
     /// @return The {@link DeferredDataComponent} holding the enqueued {@link DataComponentType} registration
     /// @see #registerDataComponent(String, UnaryOperator)
-    default <TData> DeferredDataComponent<TData> registerDataComponent(String registryName, Codec<TData> codec, StreamCodec<RegistryFriendlyByteBuf, TData> streamCodec) {
+    default <TData> DeferredDataComponent<TData> registerDataComponent(String registryName, Codec<TData> codec, StreamCodec<? super RegistryFriendlyByteBuf, TData> streamCodec) {
         return registerDataComponent(registryName, builder -> builder.persistent(codec).networkSynchronized(streamCodec));
     }
 
