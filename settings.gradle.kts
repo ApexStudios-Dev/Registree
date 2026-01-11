@@ -3,6 +3,14 @@ pluginManagement {
         maven("https://maven.apexstudios.dev/proxy")
         gradlePluginPortal()
     }
+
+    resolutionStrategy {
+        eachPlugin {
+            if(requested.id.namespace == "apex-conventions") {
+                useVersion("0.1.90")
+            }
+        }
+    }
 }
 
 plugins {
