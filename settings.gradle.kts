@@ -13,6 +13,12 @@ pluginManagement {
     }
 }
 
+dependencyResolutionManagement {
+    versionCatalogs.create("libs") {
+        version("neoforge", "26.1.0.0-alpha.5+snapshot-2")
+    }
+}
+
 plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }

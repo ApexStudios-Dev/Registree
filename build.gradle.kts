@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "dev.apexstudios"
-neoForge.version = "26.1.0.0-alpha.5+snapshot-2"
+neoForge.version = libs.versions.neoforge.get()
 
 tasks.withType<Jar> {
     manifest {
