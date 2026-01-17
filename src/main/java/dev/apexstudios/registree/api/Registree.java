@@ -8,6 +8,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.Lifecycle;
 import com.mojang.serialization.MapCodec;
 import dev.apexstudios.registree.api.holder.ApexDeferredHolder;
+import dev.apexstudios.registree.api.holder.DeferredAttachmentType;
 import dev.apexstudios.registree.api.holder.DeferredBlock;
 import dev.apexstudios.registree.api.holder.DeferredBlockEntity;
 import dev.apexstudios.registree.api.holder.DeferredDataComponent;
@@ -77,6 +78,8 @@ import net.minecraft.world.level.gamerules.GameRuleTypeVisitor;
 import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.attachment.AttachmentType;
+import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.network.IContainerFactory;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -982,6 +985,24 @@ public interface Registree {
         return registerIntegerGameRule(registryName, category, defaultValue, min, Integer.MAX_VALUE, requiredFeatures);
     }
     // endregion
+    // endregion
+
+    // region: AttachmentType
+    /// Enqueues a new {@link AttachmentType} registration for the given registry name
+    ///
+    /// @return The {@link DeferredAttachmentType} holding the enqueued {@link AttachmentType} registration
+    /// @see #registerForHolder(ResourceKey, String, Supplier, Function)
+    default <TValue> DeferredAttachmentType<TValue> registerAttachmentType(String registryName, Function<IAttachmentHolder, TValue> defaultValue, UnaryOperator<AttachmentType.Builder<TValue>> modifier) {
+        return registerForHolder(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, registryName, () -> modifier.apply(AttachmentType.builder(defaultValue)).build(), DeferredAttachmentType::new);
+    }
+
+    /// Enqueues a new {@link AttachmentType} registration for the given registry name
+    ///
+    /// @return The {@link DeferredAttachmentType} holding the enqueued {@link AttachmentType} registration
+    /// @see #registerAttachmentType(String, Function, UnaryOperator)
+    default <TValue> DeferredAttachmentType<TValue> registerAttachmentType(String registryName, Supplier<TValue> defaultValue, UnaryOperator<AttachmentType.Builder<TValue>> modifier) {
+        return registerAttachmentType(registryName, holder -> defaultValue.get(), modifier);
+    }
     // endregion
     // endregion
 
