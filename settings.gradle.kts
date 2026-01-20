@@ -15,7 +15,7 @@ pluginManagement {
 
 dependencyResolutionManagement {
     versionCatalogs.create("libs") {
-        version("neoforge", "26.1.0-alpha.26.1-snapshot-3.20260119.022558")
+        version("neoforge", "26.1.0.0-alpha.26.1-snapshot-4.20260120.204901")
     }
 }
 
