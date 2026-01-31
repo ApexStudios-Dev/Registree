@@ -4,8 +4,10 @@ import com.google.common.collect.Maps;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import dev.apexstudios.registree.registrar.BlockEntityTypeRegistrar;
 import dev.apexstudios.registree.registrar.BlockRegistrar;
+import dev.apexstudios.registree.registrar.EntityTypeRegistrar;
 import dev.apexstudios.registree.registrar.GameRuleRegistrar;
 import dev.apexstudios.registree.registrar.ItemRegistrar;
+import dev.apexstudios.registree.registrar.MenuTypeRegistrar;
 import dev.apexstudios.registree.registrar.Registrar;
 import java.util.Map;
 import java.util.Objects;
@@ -36,6 +38,8 @@ public class Registree {
             registrars.with(Registries.BLOCK, BlockRegistrar::new);
             registrars.with(Registries.BLOCK_ENTITY_TYPE, BlockEntityTypeRegistrar::new);
             registrars.with(Registries.GAME_RULE, GameRuleRegistrar::new);
+            registrars.with(Registries.ENTITY_TYPE, EntityTypeRegistrar::new);
+            registrars.with(Registries.MENU, MenuTypeRegistrar::new);
 
             registrarsConsumer.accept(registrars);
         });
@@ -90,6 +94,14 @@ public class Registree {
 
     public GameRuleRegistrar gameRules() {
         return (GameRuleRegistrar) registrarOrThrow(Registries.GAME_RULE);
+    }
+
+    public EntityTypeRegistrar entityTypes() {
+        return (EntityTypeRegistrar) registrarOrThrow(Registries.ENTITY_TYPE);
+    }
+
+    public MenuTypeRegistrar menuTypes() {
+        return (MenuTypeRegistrar) registrarOrThrow(Registries.MENU);
     }
 
     public void registerEvents(IEventBus modBus) {
