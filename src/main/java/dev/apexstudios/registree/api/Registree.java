@@ -20,7 +20,6 @@ import dev.apexstudios.registree.api.holder.DeferredItem;
 import dev.apexstudios.registree.api.holder.DeferredMenu;
 import dev.apexstudios.registree.api.holder.DeferredParticleType;
 import dev.apexstudios.registree.api.holder.DeferredRecipeSerializer;
-import dev.apexstudios.registree.common.SimpleRecipeSerializer;
 import dev.apexstudios.registree.common.SimpleRegistree;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -862,7 +861,7 @@ public interface Registree {
     /// @return The {@link DeferredRecipeSerializer} holding the enqueued {@link RecipeSerializer} registration
     /// @see #registerForHolder(ResourceKey, String, Supplier, Function)
     default <TRecipe extends Recipe<?>> DeferredRecipeSerializer<TRecipe> registerRecipeSerializer(String registryName, MapCodec<TRecipe> codec, StreamCodec<RegistryFriendlyByteBuf, TRecipe> streamCodec) {
-        return registerForHolder(Registries.RECIPE_SERIALIZER, registryName, () -> new SimpleRecipeSerializer<>(codec, streamCodec), DeferredRecipeSerializer::new);
+        return registerForHolder(Registries.RECIPE_SERIALIZER, registryName, () -> new RecipeSerializer<>(codec, streamCodec), DeferredRecipeSerializer::new);
     }
     // endregion
 
