@@ -8,8 +8,8 @@ import net.minecraft.world.inventory.MenuType;
 import net.neoforged.neoforge.registries.DeferredHolder;
 
 public class DeferredMenuType<TMenu extends AbstractContainerMenu> extends DeferredHolder<MenuType<?>, MenuType<TMenu>> {
-    protected DeferredMenuType(ResourceKey<MenuType<?>> key) {
-        super(key);
+    protected DeferredMenuType(ResourceKey<MenuType<?>> registryKey) {
+        super(registryKey);
     }
 
     public static <TMenu extends AbstractContainerMenu> DeferredMenuType<TMenu> createMenuType(ResourceKey<MenuType<?>> registryKey) {
