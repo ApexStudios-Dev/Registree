@@ -16,7 +16,7 @@ import net.minecraft.world.inventory.MenuType;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 
 public class MenuTypeRegistrar extends Registrar<MenuType<?>> {
-    private final Map<DeferredMenuType<?>, Supplier<? extends MenuScreens.ScreenConstructor<?, ?>>> screenFactories = Maps.newHashMap();
+    private final Map<DeferredMenuType<?>, Supplier<Supplier<MenuScreens.ScreenConstructor<?, ?>>>> screenFactories = Maps.newHashMap();
 
     public MenuTypeRegistrar(Registree registree) {
         super(registree, Registries.MENU);
@@ -35,13 +35,14 @@ public class MenuTypeRegistrar extends Registrar<MenuType<?>> {
         return register(identifier, factory, FeatureFlags.DEFAULT_FLAGS);
     }
 
-    public <TMenu extends AbstractContainerMenu, TScreen extends Screen & MenuAccess<TMenu>> DeferredMenuType<TMenu> register(String identifier, MenuType.MenuSupplier<TMenu> factory, FeatureFlagSet requiredFeatures, Supplier<MenuScreens.ScreenConstructor<TMenu, TScreen>> screenFactory) {
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    public <TMenu extends AbstractContainerMenu, TScreen extends Screen & MenuAccess<TMenu>> DeferredMenuType<TMenu> register(String identifier, MenuType.MenuSupplier<TMenu> factory, FeatureFlagSet requiredFeatures, Supplier<Supplier<MenuScreens.ScreenConstructor<TMenu, TScreen>>> screenFactory) {
         var holder = register(identifier, factory, requiredFeatures);
-        screenFactories.put(holder, screenFactory);
+        screenFactories.put(holder, (Supplier) screenFactory);
         return holder;
     }
 
-    public <TMenu extends AbstractContainerMenu, TScreen extends Screen & MenuAccess<TMenu>> DeferredMenuType<TMenu> register(String identifier, MenuType.MenuSupplier<TMenu> factory, Supplier<MenuScreens.ScreenConstructor<TMenu, TScreen>> screenFactory) {
+    public <TMenu extends AbstractContainerMenu, TScreen extends Screen & MenuAccess<TMenu>> DeferredMenuType<TMenu> register(String identifier, MenuType.MenuSupplier<TMenu> factory, Supplier<Supplier<MenuScreens.ScreenConstructor<TMenu, TScreen>>> screenFactory) {
         return register(identifier, factory, FeatureFlags.DEFAULT_FLAGS, screenFactory);
     }
 
@@ -50,7 +51,7 @@ public class MenuTypeRegistrar extends Registrar<MenuType<?>> {
         var factory = screenFactories.get(holder);
 
         if(factory != null) {
-            event.register(holder.value(), (MenuScreens.ScreenConstructor<? super TMenu, ?>) factory.get());
+            event.register(holder.value(), (MenuScreens.ScreenConstructor<? super TMenu, ?>) factory.get().get());
         }
     }
 }
