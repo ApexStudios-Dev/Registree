@@ -12,6 +12,7 @@ import dev.apexstudios.registree.registrar.FluidTypeRegistrar;
 import dev.apexstudios.registree.registrar.GameRuleRegistrar;
 import dev.apexstudios.registree.registrar.ItemRegistrar;
 import dev.apexstudios.registree.registrar.MenuTypeRegistrar;
+import dev.apexstudios.registree.registrar.ParticleTypeRegistrar;
 import dev.apexstudios.registree.registrar.RecipeBookCategoryRegistrar;
 import dev.apexstudios.registree.registrar.RecipeSerializerRegistrar;
 import dev.apexstudios.registree.registrar.RecipeTypeRegistrar;
@@ -55,6 +56,7 @@ public class Registree {
             registrars.with(Registries.FLUID, FluidRegistrar::new);
             registrars.with(Registries.RECIPE_TYPE, RecipeTypeRegistrar::new);
             registrars.with(Registries.RECIPE_BOOK_CATEGORY, RecipeBookCategoryRegistrar::new);
+            registrars.with(Registries.PARTICLE_TYPE, ParticleTypeRegistrar::new);
 
             registrarsConsumer.accept(registrars);
         });
@@ -145,6 +147,10 @@ public class Registree {
 
     public RecipeBookCategoryRegistrar recipeBookCategories() {
         return (RecipeBookCategoryRegistrar) registrarOrThrow(Registries.RECIPE_BOOK_CATEGORY);
+    }
+
+    public ParticleTypeRegistrar particleTypes() {
+        return (ParticleTypeRegistrar) registrarOrThrow(Registries.PARTICLE_TYPE);
     }
 
     public void registerEvents(IEventBus modBus) {
