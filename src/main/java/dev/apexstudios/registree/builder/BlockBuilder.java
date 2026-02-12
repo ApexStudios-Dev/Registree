@@ -53,7 +53,7 @@ public class BlockBuilder<TBlock extends Block> extends Builder<BlockRegistrar, 
     private BiConsumer<Context<TBlock>, BlockBehaviour.Properties> propertiesModifier = (context, properties) -> { };
     private final Multimap<BlockCapability<?, ?>, IBlockCapabilityProvider<?, ?>> capabilities = HashMultimap.create();
     private @Nullable Supplier<Supplier<IClientBlockExtensions>> clientExtensions = null;
-    private final Set<Either<ResourceKey<BlockEntityType<?>>, Supplier<BlockEntityType<?>>>> blockEntityTypes = Sets.newHashSet();
+    private final Set<Either<ResourceKey<BlockEntityType<?>>, Supplier<? extends BlockEntityType<?>>>> blockEntityTypes = Sets.newHashSet();
     private final Map<ResourceKey<PoiType>, Predicate<BlockState>> poiTypes = Maps.newHashMap();
     private @Nullable Supplier<SpecialModelRenderer.Unbaked> specialModelRenderer = null;
     private @Nullable Supplier<Supplier<BlockColor>> colorHandler = null;
@@ -105,7 +105,7 @@ public class BlockBuilder<TBlock extends Block> extends Builder<BlockRegistrar, 
         return this;
     }
 
-    public BlockBuilder<TBlock> blockEntityType(Supplier<BlockEntityType<?>> blockEntityType) {
+    public BlockBuilder<TBlock> blockEntityType(Supplier<? extends BlockEntityType<?>> blockEntityType) {
         blockEntityTypes.add(Either.right(blockEntityType));
         return this;
     }
