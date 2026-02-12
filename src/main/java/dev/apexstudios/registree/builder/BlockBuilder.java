@@ -8,6 +8,7 @@ import com.google.common.collect.Sets;
 import com.mojang.datafixers.util.Either;
 import dev.apexstudios.registree.registrar.BlockRegistrar;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -21,6 +22,7 @@ import net.minecraft.client.color.block.BlockColor;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.client.renderer.special.SpecialModelRenderer;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.ai.village.poi.PoiType;
 import net.minecraft.world.item.BlockItem;
@@ -42,6 +44,7 @@ import net.neoforged.neoforge.client.extensions.common.IClientBlockExtensions;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.common.world.poi.ExtendPoiTypesEvent;
 import net.neoforged.neoforge.event.BlockEntityTypeAddBlocksEvent;
+import net.neoforged.neoforge.mixins.BlockEntityTypeAccessor;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import org.apache.commons.lang3.function.Consumers;
 import org.jspecify.annotations.Nullable;
@@ -226,7 +229,7 @@ public class BlockBuilder<TBlock extends Block> extends Builder<BlockRegistrar, 
         return factory.apply(properties);
     }
 
-    @SuppressWarnings("deprecation")
+    @SuppressWarnings({"deprecation", "UnstableApiUsage"})
     @Override
     protected void finalize(Context<TBlock> context) {
         if(!capabilities.isEmpty()) {
@@ -248,10 +251,24 @@ public class BlockBuilder<TBlock extends Block> extends Builder<BlockRegistrar, 
 
         if(!blockEntityTypes.isEmpty()) {
             context.registree().event(BlockEntityTypeAddBlocksEvent.class, event -> {
-                blockEntityTypes.forEach(either -> either
-                                .ifLeft(registryKey -> event.modify(registryKey, context.get()))
-                                .ifRight(blockEntityType -> event.modify(blockEntityType.get(), context.get()))
-                );
+                blockEntityTypes.stream()
+                        .map(either -> either.map(
+                                BuiltInRegistries.BLOCK_ENTITY_TYPE::getValue,
+                                Supplier::get
+                        ))
+                        .filter(Objects::nonNull)
+                        .forEach(blockEntityType -> {
+                            // neoforges implementation does not work very well
+                            // when the given block entity type has 0 valid blocks initially
+                            // the determined common super type is pulled from the first registered block
+                            // which can differ vastly from the rest of the blocks causing 'IAE' in 'addValidBlock'
+                            //
+                            // our implementation is basically theirs but without the block type checking
+                            // we are assuming that the given blocks are of the correct block types
+                            var validBlocks = Sets.newHashSet(blockEntityType.getValidBlocks());
+                            validBlocks.add(context.get());
+                            ((BlockEntityTypeAccessor) blockEntityType).neoforge$setValidBlocks(validBlocks);
+                        });
 
                 blockEntityTypes.clear();
             });
