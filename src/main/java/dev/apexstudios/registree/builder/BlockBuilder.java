@@ -52,11 +52,11 @@ public class BlockBuilder<TBlock extends Block> extends Builder<BlockRegistrar, 
     private Function<Context<TBlock>, BlockBehaviour.Properties> initialProperties = context -> BlockBehaviour.Properties.ofLegacyCopy(Blocks.STONE);
     private BiConsumer<Context<TBlock>, BlockBehaviour.Properties> propertiesModifier = (context, properties) -> { };
     private final Multimap<BlockCapability<?, ?>, IBlockCapabilityProvider<?, ?>> capabilities = HashMultimap.create();
-    private @Nullable IClientBlockExtensions clientExtensions = null;
+    private @Nullable Supplier<Supplier<IClientBlockExtensions>> clientExtensions = null;
     private final Set<Either<ResourceKey<BlockEntityType<?>>, Supplier<BlockEntityType<?>>>> blockEntityTypes = Sets.newHashSet();
     private final Map<ResourceKey<PoiType>, Predicate<BlockState>> poiTypes = Maps.newHashMap();
     private @Nullable Supplier<SpecialModelRenderer.Unbaked> specialModelRenderer = null;
-    private @Nullable Supplier<BlockColor> colorHandler = null;
+    private @Nullable Supplier<Supplier<BlockColor>> colorHandler = null;
     private @Nullable ChunkSectionLayer renderType = null;
 
     public BlockBuilder(BlockRegistrar registrar, String identifier, Function<BlockBehaviour.Properties, TBlock> factory) {
@@ -100,7 +100,7 @@ public class BlockBuilder<TBlock extends Block> extends Builder<BlockRegistrar, 
         }
     }
 
-    public BlockBuilder<TBlock> clientExtensions(IClientBlockExtensions clientExtensions) {
+    public BlockBuilder<TBlock> clientExtensions(Supplier<Supplier<IClientBlockExtensions>> clientExtensions) {
         this.clientExtensions = clientExtensions;
         return this;
     }
@@ -137,7 +137,7 @@ public class BlockBuilder<TBlock extends Block> extends Builder<BlockRegistrar, 
         return this;
     }
 
-    public BlockBuilder<TBlock> colorHandler(Supplier<BlockColor> colorHandler) {
+    public BlockBuilder<TBlock> colorHandler(Supplier<Supplier<BlockColor>> colorHandler) {
         this.colorHandler = colorHandler;
         return this;
     }
@@ -241,7 +241,7 @@ public class BlockBuilder<TBlock extends Block> extends Builder<BlockRegistrar, 
 
         if(clientExtensions != null) {
             context.registree().event(RegisterClientExtensionsEvent.class, event -> {
-                event.registerBlock(clientExtensions, context.get());
+                event.registerBlock(clientExtensions.get().get(), context.get());
                 clientExtensions = null;
             });
         }
@@ -273,7 +273,7 @@ public class BlockBuilder<TBlock extends Block> extends Builder<BlockRegistrar, 
 
         if(colorHandler != null) {
             context.registree().event(RegisterColorHandlersEvent.Block.class, event -> {
-                event.register(colorHandler.get(), context.get());
+                event.register(colorHandler.get().get(), context.get());
                 colorHandler = null;
             });
         }

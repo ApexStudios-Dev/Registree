@@ -7,6 +7,7 @@ import dev.apexstudios.registree.registrar.EntityTypeRegistrar;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
@@ -30,7 +31,7 @@ public class EntityTypeBuilder<TEntity extends Entity> extends Builder<EntityTyp
     private final EntityType.EntityFactory<TEntity> factory;
     private final MobCategory category;
     private BiConsumer<Context<TEntity>, EntityType.Builder<TEntity>> propertiesModifier = (context, builder) -> { };
-    private @Nullable EntityRendererProvider<TEntity> rendererProvider = null;
+    private @Nullable Supplier<Supplier<EntityRendererProvider<TEntity>>> rendererProvider = null;
     private final Multimap<EntityCapability<?, ?>, ICapabilityProvider<TEntity, ?, ?>> capabilities = HashMultimap.create();
     private @Nullable Function<Context<TEntity>, Identifier> spectatorShader = null;
     private @Nullable AttributeSupplier attributes = null;
@@ -52,7 +53,7 @@ public class EntityTypeBuilder<TEntity extends Entity> extends Builder<EntityTyp
         return properties((context, builder) -> propertiesModifier.accept(builder));
     }
 
-    public EntityTypeBuilder<TEntity> renderer(EntityRendererProvider<TEntity> rendererProvider) {
+    public EntityTypeBuilder<TEntity> renderer(Supplier<Supplier<EntityRendererProvider<TEntity>>> rendererProvider) {
         this.rendererProvider = rendererProvider;
         return this;
     }
@@ -113,7 +114,7 @@ public class EntityTypeBuilder<TEntity extends Entity> extends Builder<EntityTyp
     protected void finalize(Context<TEntity> context) {
         if(rendererProvider != null) {
             context.registree().event(EntityRenderersEvent.RegisterRenderers.class, event -> {
-                event.registerEntityRenderer(context.get(), rendererProvider);
+                event.registerEntityRenderer(context.get(), rendererProvider.get().get());
                 rendererProvider = null;
             });
         }

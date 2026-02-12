@@ -23,7 +23,7 @@ public class BlockEntityTypeBuilder<TBlockEntity extends BlockEntity> extends Bu
     private final BlockEntityType.BlockEntitySupplier<TBlockEntity> factory;
     private final Set<Supplier<? extends Block>> validBlocks = Sets.newHashSet();
     private boolean onlyOpCanSetNbt = false;
-    private @Nullable BlockEntityRendererProvider<TBlockEntity, ? extends BlockEntityRenderState> rendererProvider = null;
+    private @Nullable Supplier<Supplier<BlockEntityRendererProvider<TBlockEntity, ? extends BlockEntityRenderState>>> rendererProvider = null;
     private final Multimap<BlockCapability<?, ?>, ICapabilityProvider<TBlockEntity, ?, ?>> capabilities = HashMultimap.create();
 
     public BlockEntityTypeBuilder(BlockEntityTypeRegistrar registrar, String identifier, BlockEntityType.BlockEntitySupplier<TBlockEntity> factory) {
@@ -46,7 +46,7 @@ public class BlockEntityTypeBuilder<TBlockEntity extends BlockEntity> extends Bu
         return onlyOpCanSetNbt(true);
     }
 
-    public BlockEntityTypeBuilder<TBlockEntity> renderer(BlockEntityRendererProvider<TBlockEntity, ? extends BlockEntityRenderState> rendererProvider) {
+    public BlockEntityTypeBuilder<TBlockEntity> renderer(Supplier<Supplier<BlockEntityRendererProvider<TBlockEntity, ? extends BlockEntityRenderState>>> rendererProvider) {
         this.rendererProvider = rendererProvider;
         return this;
     }
@@ -72,7 +72,7 @@ public class BlockEntityTypeBuilder<TBlockEntity extends BlockEntity> extends Bu
     protected void finalize(Context<TBlockEntity> context) {
         if(rendererProvider != null) {
             context.registree().event(EntityRenderersEvent.RegisterRenderers.class, event -> {
-                event.registerBlockEntityRenderer(context.get(), rendererProvider);
+                event.registerBlockEntityRenderer(context.get(), rendererProvider.get().get());
                 rendererProvider = null;
             });
         }

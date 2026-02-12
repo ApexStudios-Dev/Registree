@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
@@ -31,7 +32,7 @@ public class ItemBuilder<TItem extends Item> extends Builder<ItemRegistrar, Item
     private BiConsumer<Context<TItem>, Item.Properties> propertiesModifier = (context, properties) -> { };
     private final Multimap<ItemCapability<?, ?>, ICapabilityProvider<ItemStack, ?, ?>> capabilities = HashMultimap.create();
     private final List<IItemDecorator> decorators = Lists.newArrayList();
-    private @Nullable IClientItemExtensions clientExtensions = null;
+    private @Nullable Supplier<Supplier<IClientItemExtensions>> clientExtensions = null;
     private final Map<ResourceKey<CreativeModeTab>, CreativeModeTabAppender<TItem>> creativeModeTabs = Maps.newHashMap();
 
     public ItemBuilder(ItemRegistrar registrar, String identifier, Function<Item.Properties, TItem> factory) {
@@ -66,7 +67,7 @@ public class ItemBuilder<TItem extends Item> extends Builder<ItemRegistrar, Item
         return this;
     }
 
-    public ItemBuilder<TItem> clientExtensions(IClientItemExtensions clientExtensions) {
+    public ItemBuilder<TItem> clientExtensions(Supplier<Supplier<IClientItemExtensions>> clientExtensions) {
         this.clientExtensions = clientExtensions;
         return this;
     }
@@ -116,7 +117,7 @@ public class ItemBuilder<TItem extends Item> extends Builder<ItemRegistrar, Item
 
         if(clientExtensions != null) {
             context.registree().event(RegisterClientExtensionsEvent.class, event -> {
-                event.registerItem(clientExtensions, context.asItem());
+                event.registerItem(clientExtensions.get().get(), context.asItem());
                 clientExtensions = null;
             });
         }
