@@ -50,8 +50,10 @@ public abstract class Builder<
 
     protected abstract TValue compile(TContext context);
 
-    protected final <TBuilder extends Builder<?, ?, ?, ?, ?, TBuilder>> void child(Function<TContext, TBuilder> childFactory) {
+    @SuppressWarnings("unchecked")
+    protected final <TBuilder extends Builder<?, ?, ?, ?, ?, TBuilder>> TSelf child(Function<TContext, TBuilder> childFactory) {
         children.add(childFactory);
+        return (TSelf) this;
     }
 
     public final THolder register() {

@@ -48,7 +48,10 @@ public class ItemRegistrar extends Registrar<Item> {
     }
 
     public <TItem extends Item, TBlock extends Block> DeferredItem<TItem> register(String identifier, Supplier<TBlock> blockSupplier, BiFunction<TBlock, Item.Properties, TItem> factory, Consumer<Item.Properties> propertiesModifier) {
-        return register(identifier, properties -> factory.apply(blockSupplier.get(), properties), propertiesModifier);
+        return register(identifier, properties -> factory.apply(blockSupplier.get(), properties), properties -> {
+            properties.useBlockDescriptionPrefix();
+            propertiesModifier.accept(properties);
+        });
     }
 
     public <TItem extends Item, TBlock extends Block> DeferredItem<TItem> register(String identifier, Supplier<TBlock> blockSupplier, BiFunction<TBlock, Item.Properties, TItem> factory) {

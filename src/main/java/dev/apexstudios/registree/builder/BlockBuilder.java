@@ -150,14 +150,16 @@ public class BlockBuilder<TBlock extends Block> extends Builder<BlockRegistrar, 
         return this;
     }
 
-    public <TItem extends Item> BlockBuilder<TBlock> item(String identifier, BiFunction<TBlock, Item.Properties, TItem> factory, Consumer<ItemBuilder<TItem>> modifier) {
-        child(context -> {
-            var builder = context.registree().items().builder(identifier, properties -> factory.apply(context.get(), properties));
-            modifier.accept(builder);
-            return builder;
-        });
+    private <TItem extends Item> ItemBuilder<TItem> itemBuilder(Context<TBlock> context, String identifier, BiFunction<TBlock, Item.Properties, TItem> factory, Consumer<ItemBuilder<TItem>> modifier) {
+        var builder = context.registree().items().builder(identifier, properties -> factory.apply(context.get(), properties))
+                .properties(Item.Properties::useBlockDescriptionPrefix);
 
-        return this;
+        modifier.accept(builder);
+        return builder;
+    }
+
+    public <TItem extends Item> BlockBuilder<TBlock> item(String identifier, BiFunction<TBlock, Item.Properties, TItem> factory, Consumer<ItemBuilder<TItem>> modifier) {
+        return child(context -> itemBuilder(context, identifier, factory, modifier));
     }
 
     public <TItem extends Item> BlockBuilder<TBlock> item(String identifier, BiFunction<TBlock, Item.Properties, TItem> factory) {
@@ -173,13 +175,7 @@ public class BlockBuilder<TBlock extends Block> extends Builder<BlockRegistrar, 
     }
 
     public <TItem extends Item> BlockBuilder<TBlock> item(BiFunction<TBlock, Item.Properties, TItem> factory, Consumer<ItemBuilder<TItem>> modifier) {
-        child(context -> {
-            var builder = context.registree().items().builder(context.identifier(), properties -> factory.apply(context.get(), properties));
-            modifier.accept(builder);
-            return builder;
-        });
-
-        return this;
+        return child(context -> itemBuilder(context, context.identifier(), factory, modifier));
     }
 
     public <TItem extends Item> BlockBuilder<TBlock> item(BiFunction<TBlock, Item.Properties, TItem> factory) {
