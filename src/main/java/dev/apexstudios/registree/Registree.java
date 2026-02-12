@@ -7,6 +7,8 @@ import dev.apexstudios.registree.registrar.BlockRegistrar;
 import dev.apexstudios.registree.registrar.CreativeModeTabRegistrar;
 import dev.apexstudios.registree.registrar.DataComponentTypeRegistrar;
 import dev.apexstudios.registree.registrar.EntityTypeRegistrar;
+import dev.apexstudios.registree.registrar.FluidRegistrar;
+import dev.apexstudios.registree.registrar.FluidTypeRegistrar;
 import dev.apexstudios.registree.registrar.GameRuleRegistrar;
 import dev.apexstudios.registree.registrar.ItemRegistrar;
 import dev.apexstudios.registree.registrar.MenuTypeRegistrar;
@@ -24,6 +26,7 @@ import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.event.IModBusEvent;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import org.apache.commons.lang3.function.Consumers;
 import org.jspecify.annotations.Nullable;
@@ -46,6 +49,8 @@ public class Registree {
             registrars.with(Registries.DATA_COMPONENT_TYPE, DataComponentTypeRegistrar::new);
             registrars.with(Registries.CREATIVE_MODE_TAB, CreativeModeTabRegistrar::new);
             registrars.with(Registries.RECIPE_SERIALIZER, RecipeSerializerRegistrar::new);
+            registrars.with(NeoForgeRegistries.Keys.FLUID_TYPES, FluidTypeRegistrar::new);
+            registrars.with(Registries.FLUID, FluidRegistrar::new);
 
             registrarsConsumer.accept(registrars);
         });
@@ -120,6 +125,14 @@ public class Registree {
 
     public RecipeSerializerRegistrar recipeSerializers() {
         return (RecipeSerializerRegistrar) registrarOrThrow(Registries.RECIPE_SERIALIZER);
+    }
+
+    public FluidTypeRegistrar fluidTypes() {
+        return (FluidTypeRegistrar) registrarOrThrow(NeoForgeRegistries.Keys.FLUID_TYPES);
+    }
+
+    public FluidRegistrar fluids() {
+        return (FluidRegistrar) registrarOrThrow(Registries.FLUID);
     }
 
     public void registerEvents(IEventBus modBus) {
