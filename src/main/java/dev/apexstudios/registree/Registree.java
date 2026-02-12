@@ -10,6 +10,7 @@ import dev.apexstudios.registree.registrar.EntityTypeRegistrar;
 import dev.apexstudios.registree.registrar.GameRuleRegistrar;
 import dev.apexstudios.registree.registrar.ItemRegistrar;
 import dev.apexstudios.registree.registrar.MenuTypeRegistrar;
+import dev.apexstudios.registree.registrar.RecipeSerializerRegistrar;
 import dev.apexstudios.registree.registrar.Registrar;
 import java.util.Map;
 import java.util.Objects;
@@ -44,6 +45,7 @@ public class Registree {
             registrars.with(Registries.MENU, MenuTypeRegistrar::new);
             registrars.with(Registries.DATA_COMPONENT_TYPE, DataComponentTypeRegistrar::new);
             registrars.with(Registries.CREATIVE_MODE_TAB, CreativeModeTabRegistrar::new);
+            registrars.with(Registries.RECIPE_SERIALIZER, RecipeSerializerRegistrar::new);
 
             registrarsConsumer.accept(registrars);
         });
@@ -114,6 +116,10 @@ public class Registree {
 
     public CreativeModeTabRegistrar creativeModeTabs() {
         return (CreativeModeTabRegistrar) registrarOrThrow(Registries.CREATIVE_MODE_TAB);
+    }
+
+    public RecipeSerializerRegistrar recipeSerializers() {
+        return (RecipeSerializerRegistrar) registrarOrThrow(Registries.RECIPE_SERIALIZER);
     }
 
     public void registerEvents(IEventBus modBus) {
