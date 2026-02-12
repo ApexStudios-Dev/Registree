@@ -151,6 +151,10 @@ public class Registrar<TRegistry> implements Iterable<TRegistry>, Keyable {
         return Objects.requireNonNull(get(identifier), () -> "Missing registration in " + this + ": " + identifier);
     }
 
+    public Stream<Holder.Reference<TRegistry>> holders() {
+        return holders.values().stream();
+    }
+
     @Override
     public Iterator<TRegistry> iterator() {
         return Iterators.transform(holders.values().iterator(), Holder::value);
