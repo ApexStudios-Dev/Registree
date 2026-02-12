@@ -9,6 +9,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.util.Unit;
 
 public class DataComponentTypeRegistrar extends Registrar<DataComponentType<?>> {
     public DataComponentTypeRegistrar(Registree registree) {
@@ -37,5 +38,9 @@ public class DataComponentTypeRegistrar extends Registrar<DataComponentType<?>> 
 
     public <TValue> DeferredDataComponentType<TValue> register(String identifier, StreamCodec<RegistryFriendlyByteBuf, TValue> streamCodec) {
         return register(identifier, builder -> builder.networkSynchronized(streamCodec));
+    }
+
+    public DeferredDataComponentType<Unit> registerUnit(String identifier) {
+        return register(identifier, Unit.CODEC, Unit.STREAM_CODEC.cast());
     }
 }
