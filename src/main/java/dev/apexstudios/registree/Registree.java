@@ -12,7 +12,9 @@ import dev.apexstudios.registree.registrar.FluidTypeRegistrar;
 import dev.apexstudios.registree.registrar.GameRuleRegistrar;
 import dev.apexstudios.registree.registrar.ItemRegistrar;
 import dev.apexstudios.registree.registrar.MenuTypeRegistrar;
+import dev.apexstudios.registree.registrar.RecipeBookCategoryRegistrar;
 import dev.apexstudios.registree.registrar.RecipeSerializerRegistrar;
+import dev.apexstudios.registree.registrar.RecipeTypeRegistrar;
 import dev.apexstudios.registree.registrar.Registrar;
 import java.util.Map;
 import java.util.Objects;
@@ -51,6 +53,8 @@ public class Registree {
             registrars.with(Registries.RECIPE_SERIALIZER, RecipeSerializerRegistrar::new);
             registrars.with(NeoForgeRegistries.Keys.FLUID_TYPES, FluidTypeRegistrar::new);
             registrars.with(Registries.FLUID, FluidRegistrar::new);
+            registrars.with(Registries.RECIPE_TYPE, RecipeTypeRegistrar::new);
+            registrars.with(Registries.RECIPE_BOOK_CATEGORY, RecipeBookCategoryRegistrar::new);
 
             registrarsConsumer.accept(registrars);
         });
@@ -133,6 +137,14 @@ public class Registree {
 
     public FluidRegistrar fluids() {
         return (FluidRegistrar) registrarOrThrow(Registries.FLUID);
+    }
+
+    public RecipeTypeRegistrar recipeTypes() {
+        return (RecipeTypeRegistrar) registrarOrThrow(Registries.RECIPE_TYPE);
+    }
+
+    public RecipeBookCategoryRegistrar recipeBookCategories() {
+        return (RecipeBookCategoryRegistrar) registrarOrThrow(Registries.RECIPE_BOOK_CATEGORY);
     }
 
     public void registerEvents(IEventBus modBus) {
