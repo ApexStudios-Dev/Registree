@@ -33,7 +33,7 @@ import org.jspecify.annotations.Nullable;
 public class Registrar<TRegistry> implements Iterable<TRegistry>, Keyable {
     private final Registree registree;
     private final ResourceKey<? extends Registry<TRegistry>> registryType;
-    private final Map<String, Function<Identifier, ? extends TRegistry>> factories = Maps.newHashMap();
+    private final Map<String, Function<Identifier, ? extends TRegistry>> factories = Maps.newLinkedHashMap();
     private final Map<String, Holder.Reference<TRegistry>> holders = Maps.newHashMap();
     private HolderLookup.@Nullable RegistryLookup<TRegistry> backend = null;
     private final Multimap<ResourceKey<TRegistry>, Consumer<? super TRegistry>> callbacks = HashMultimap.create();
