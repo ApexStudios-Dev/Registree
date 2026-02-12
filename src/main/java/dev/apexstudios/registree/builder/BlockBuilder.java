@@ -221,7 +221,7 @@ public class BlockBuilder<TBlock extends Block> extends Builder<BlockRegistrar, 
 
     @Override
     protected TBlock compile(Context<TBlock> context) {
-        var properties = initialProperties.apply(context);
+        var properties = initialProperties.apply(context).setId(context.registryKey());
         propertiesModifier.accept(context, properties);
         return factory.apply(properties);
     }
