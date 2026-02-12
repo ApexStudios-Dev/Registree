@@ -46,7 +46,7 @@ import net.neoforged.neoforge.registries.DeferredBlock;
 import org.apache.commons.lang3.function.Consumers;
 import org.jspecify.annotations.Nullable;
 
-public class BlockBuilder<TBlock extends Block> extends Builder<BlockRegistrar, Block, TBlock, DeferredBlock<TBlock>, BlockBuilder.Context<TBlock>> {
+public class BlockBuilder<TBlock extends Block> extends Builder<BlockRegistrar, Block, TBlock, DeferredBlock<TBlock>, BlockBuilder.Context<TBlock>, BlockBuilder<TBlock>> {
     private final Function<BlockBehaviour.Properties, TBlock> factory;
     @SuppressWarnings("deprecation")
     private Function<Context<TBlock>, BlockBehaviour.Properties> initialProperties = context -> BlockBehaviour.Properties.ofLegacyCopy(Blocks.STONE);

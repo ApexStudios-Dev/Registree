@@ -19,7 +19,7 @@ import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import org.jspecify.annotations.Nullable;
 
-public class BlockEntityTypeBuilder<TBlockEntity extends BlockEntity> extends Builder<BlockEntityTypeRegistrar, BlockEntityType<?>, BlockEntityType<TBlockEntity>, DeferredBlockEntityType<TBlockEntity>, BlockEntityTypeBuilder.Context<TBlockEntity>> {
+public class BlockEntityTypeBuilder<TBlockEntity extends BlockEntity> extends Builder<BlockEntityTypeRegistrar, BlockEntityType<?>, BlockEntityType<TBlockEntity>, DeferredBlockEntityType<TBlockEntity>, BlockEntityTypeBuilder.Context<TBlockEntity>, BlockEntityTypeBuilder<TBlockEntity>> {
     private final BlockEntityType.BlockEntitySupplier<TBlockEntity> factory;
     private final Set<Supplier<? extends Block>> validBlocks = Sets.newHashSet();
     private boolean onlyOpCanSetNbt = false;

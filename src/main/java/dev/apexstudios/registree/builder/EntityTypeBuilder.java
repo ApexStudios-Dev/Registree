@@ -26,7 +26,7 @@ import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
 import org.jspecify.annotations.Nullable;
 
-public class EntityTypeBuilder<TEntity extends Entity> extends Builder<EntityTypeRegistrar, EntityType<?>, EntityType<TEntity>, DeferredEntityType<TEntity>, EntityTypeBuilder.Context<TEntity>> {
+public class EntityTypeBuilder<TEntity extends Entity> extends Builder<EntityTypeRegistrar, EntityType<?>, EntityType<TEntity>, DeferredEntityType<TEntity>, EntityTypeBuilder.Context<TEntity>, EntityTypeBuilder<TEntity>> {
     private final EntityType.EntityFactory<TEntity> factory;
     private final MobCategory category;
     private BiConsumer<Context<TEntity>, EntityType.Builder<TEntity>> propertiesModifier = (context, builder) -> { };

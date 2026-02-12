@@ -26,7 +26,7 @@ import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredItem;
 import org.jspecify.annotations.Nullable;
 
-public class ItemBuilder<TItem extends Item> extends Builder<ItemRegistrar, Item, TItem, DeferredItem<TItem>, ItemBuilder.Context<TItem>> {
+public class ItemBuilder<TItem extends Item> extends Builder<ItemRegistrar, Item, TItem, DeferredItem<TItem>, ItemBuilder.Context<TItem>, ItemBuilder<TItem>> {
     private final Function<Item.Properties, TItem> factory;
     private BiConsumer<Context<TItem>, Item.Properties> propertiesModifier = (context, properties) -> { };
     private final Multimap<ItemCapability<?, ?>, ICapabilityProvider<ItemStack, ?, ?>> capabilities = HashMultimap.create();
