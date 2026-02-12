@@ -41,6 +41,10 @@ public class MenuTypeRegistrar extends Registrar<MenuType<?>> {
         return holder;
     }
 
+    public <TMenu extends AbstractContainerMenu, TScreen extends Screen & MenuAccess<TMenu>> DeferredMenuType<TMenu> register(String identifier, MenuType.MenuSupplier<TMenu> factory, Supplier<MenuScreens.ScreenConstructor<TMenu, TScreen>> screenFactory) {
+        return register(identifier, factory, FeatureFlags.DEFAULT_FLAGS, screenFactory);
+    }
+
     @SuppressWarnings("unchecked")
     private <TMenu extends AbstractContainerMenu> void registerScreen(RegisterMenuScreensEvent event, DeferredMenuType<TMenu> holder) {
         var factory = screenFactories.get(holder);
