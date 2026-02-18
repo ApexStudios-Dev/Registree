@@ -19,8 +19,6 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.minecraft.client.color.block.BlockColor;
-import net.minecraft.client.renderer.ItemBlockRenderTypes;
-import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.client.renderer.special.SpecialModelRenderer;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
@@ -34,7 +32,6 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
-import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.capabilities.IBlockCapabilityProvider;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
@@ -60,7 +57,6 @@ public class BlockBuilder<TBlock extends Block> extends Builder<BlockRegistrar, 
     private final Map<ResourceKey<PoiType>, Predicate<BlockState>> poiTypes = Maps.newHashMap();
     private @Nullable Supplier<SpecialModelRenderer.Unbaked> specialModelRenderer = null;
     private @Nullable Supplier<Supplier<BlockColor>> colorHandler = null;
-    private @Nullable ChunkSectionLayer renderType = null;
 
     public BlockBuilder(BlockRegistrar registrar, String identifier, Function<BlockBehaviour.Properties, TBlock> factory) {
         super(registrar, identifier, DeferredBlock::createBlock, Context::new);
@@ -142,11 +138,6 @@ public class BlockBuilder<TBlock extends Block> extends Builder<BlockRegistrar, 
 
     public BlockBuilder<TBlock> colorHandler(Supplier<Supplier<BlockColor>> colorHandler) {
         this.colorHandler = colorHandler;
-        return this;
-    }
-
-    public BlockBuilder<TBlock> renderType(ChunkSectionLayer renderType) {
-        this.renderType = renderType;
         return this;
     }
 
@@ -289,13 +280,6 @@ public class BlockBuilder<TBlock extends Block> extends Builder<BlockRegistrar, 
                 event.register(colorHandler.get().get(), context.get());
                 colorHandler = null;
             });
-        }
-
-        if(renderType != null) {
-            context.registree().event(FMLClientSetupEvent.class, event -> event.enqueueWork(() -> {
-                ItemBlockRenderTypes.setRenderLayer(context.get(), renderType);
-                renderType = null;
-            }));
         }
     }
 
