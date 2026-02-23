@@ -2,6 +2,7 @@ package dev.apexstudios.registree;
 
 import com.google.common.collect.Maps;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
+import dev.apexstudios.registree.data.ResourceGenerator;
 import dev.apexstudios.registree.registrar.BlockEntityTypeRegistrar;
 import dev.apexstudios.registree.registrar.BlockRegistrar;
 import dev.apexstudios.registree.registrar.CreativeModeTabRegistrar;
@@ -38,6 +39,7 @@ public class Registree {
     private final String namespace;
     private final Map<ResourceKey<? extends Registry<?>>, Registrar<?>> registrars = Maps.newHashMap();
     private final Deferred.Notifiable<IEventBus> modBus = Deferred.create();
+    private final ResourceGenerator datagen = new ResourceGenerator(this);
 
     public Registree(String namespace, Consumer<Registrars> registrarsConsumer) {
         this.namespace = namespace;
@@ -63,6 +65,10 @@ public class Registree {
 
         event(EventPriority.HIGH, RegisterEvent.class, event -> registrars.values().forEach(registrar -> registrar.onRegister(event, true)));
         event(EventPriority.LOW, RegisterEvent.class, event -> registrars.values().forEach(registrar -> registrar.onRegister(event, false)));
+    }
+
+    public ResourceGenerator datagen() {
+        return datagen;
     }
 
     public String namespace() {
