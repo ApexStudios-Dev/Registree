@@ -1,6 +1,7 @@
 pluginManagement {
     repositories {
         gradlePluginPortal()
+        maven("https://maven.apexmodder.com/releases")
     }
 
     if(file("../../ApexGradle").exists()) {
