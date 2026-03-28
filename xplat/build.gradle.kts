@@ -6,8 +6,8 @@ plugins {
     id("apex-conventions.jspecify")
 }
 
-group = "dev.apexstudios"
-base.archivesName = "registree-xplat"
+group = "dev.apexstudios.registree"
+base.archivesName = "xplat"
 version = providers.environmentVariable("VERSION").getOrElse("0.0NONE")
 
 neoForge {
@@ -30,8 +30,8 @@ java {
 publishing {
     publications.create("release", MavenPublication::class.java) {
         afterEvaluate {
-            groupId = "dev.apexstudios"
-            artifactId = "registree-xplat"
+            groupId = project.group as String
+            artifactId = project.name
             version = project.version as String
         }
 
