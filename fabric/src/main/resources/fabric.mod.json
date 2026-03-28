@@ -5,8 +5,12 @@
     "name": "Registree",
     "description": "Registree",
     "authors": [
+        "ApexStudios",
         "Apex - Programming"
     ],
+    "contact": {
+        "issues": "https://github.com/ApexStudios-Dev/Issues/issues"
+    },
     "license": "AllRightsReserved",
     "environment": "*",
     "mixins": [
@@ -17,5 +21,22 @@
         "fabricloader": ">=0.18.4",
         "minecraft": ">=26.1",
         "fabric-api": ">=0.100.6"
+    },
+    "custom": {
+        "modmenu": {
+            "links": {
+                "discord": "https://discord.apexmodder.com"
+            },
+            "badges": [
+                "library"
+            ],
+            "parent": {
+                "id": "apexcore",
+                "name": "ApexCore",
+                "description": "ApexCore is a library mod required by all of ApexStudios' mods, such as Fantasy's Furniture, Fantasy's Dice and Infused Foods.",
+                "icon": "logo.png"
+            },
+            "update_checker": false
+        }
     }
 }
