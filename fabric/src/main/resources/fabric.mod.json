@@ -1,0 +1,21 @@
+{
+    "schemaVersion": 1,
+    "id": "registree",
+    "version": "${version}",
+    "name": "Registree",
+    "description": "Registree",
+    "authors": [
+        "Apex - Programming"
+    ],
+    "license": "AllRightsReserved",
+    "environment": "*",
+    "mixins": [
+        "registree-fabric.mixins.json"
+    ],
+    "accessWidener": "registree.accesswidener",
+    "depends": {
+        "fabricloader": ">=0.18.4",
+        "minecraft": ">=26.1",
+        "fabric-api": ">=0.100.6"
+    }
+}

@@ -1,0 +1,22 @@
+{
+    "schemaVersion": 1,
+    "id": "testmod",
+    "version": "${version}",
+    "name": "TestMod",
+    "description": "TestMod",
+    "authors": [
+        "Apex - Programming"
+    ],
+    "license": "AllRightsReserved",
+    "environment": "*",
+    "entrypoints": {
+        "main": [
+            "dev.apexstudios.testmod.fabric.TestModFabric"
+        ]
+    },
+    "depends": {
+        "fabricloader": ">=0.18.4",
+        "minecraft": ">=26.1",
+        "fabric-api": ">=0.100.6"
+    }
+}

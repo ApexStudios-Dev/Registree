@@ -1,0 +1,16 @@
+license = "AllRightsReserved"
+
+[[mods]]
+modId = "testmod"
+version = "${file.jarVersion}"
+displayName = "TestMod"
+credits = "Apex - Programming"
+authors = "ApexStudios"
+description = "TestMod"
+
+[[dependencies.itemresistance]]
+modId = "neoforge"
+type = "required"
+versionRange = "[26.1-beta,26.2)"
+ordering = "NONE"
+side = "BOTH"
