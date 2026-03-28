@@ -17,6 +17,7 @@ version = providers.environmentVariable("VERSION").getOrElse("0.0NONE")
 
 neoForge {
     version = libs.versions.neoforge.get()
+    validateAccessTransformers.set(true)
     addModdingDependenciesTo(sourceSets[SourceSet.TEST_SOURCE_SET_NAME])
 
     mods {
@@ -61,13 +62,8 @@ neoForge {
 }
 
 dependencies {
-    compileOnly(project(":xplat")) {
-        isTransitive = false
-    }
-
-    accessTransformers(project(":xplat")) {
-        isTransitive = false
-    }
+    compileOnly(dependencyFactory.create(xplat)) { isTransitive = false }
+    accessTransformers(dependencyFactory.create(xplat)) { isTransitive = false }
 
     testImplementation(xplat)
     testImplementation(xplat.sourceSets[SourceSet.TEST_SOURCE_SET_NAME].output)

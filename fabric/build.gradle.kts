@@ -72,9 +72,7 @@ dependencies {
 
     runtimeOnly(libs.devlogin)
 
-    compileOnly(project(":xplat")) {
-        isTransitive = false
-    }
+    compileOnly(dependencyFactory.create(xplat)) { isTransitive = false }
 
     testImplementation(xplat)
     testImplementation(xplat.sourceSets[SourceSet.TEST_SOURCE_SET_NAME].output)

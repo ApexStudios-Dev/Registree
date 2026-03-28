@@ -37,6 +37,12 @@ plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
 
+gradle.beforeProject {
+    repositories {
+        maven("https://maven.apexmodder.com/releases")
+    }
+}
+
 include("xplat")
 include("neoforge")
 include("fabric")
