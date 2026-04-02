@@ -1,0 +1,16 @@
+name: Build PR
+
+on:
+  pull_request:
+    types:
+      - synchronize
+      - opened
+
+jobs:
+  build:
+    name: Build
+    uses: ApexStudios-Dev/.github/.github/workflows/_build.yml@workflow-refactor
+    secrets: inherit
+    with:
+      java-version: 25
+      java-vendor: temurin

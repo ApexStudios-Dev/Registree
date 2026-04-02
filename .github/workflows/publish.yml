@@ -1,0 +1,18 @@
+name: Publish
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ '**/main' ]
+    paths: [ '**/src/**' ]
+
+jobs:
+  publish-library:
+    uses: ApexStudios-Dev/.github/.github/workflows/_publish-library.yml@workflow-refactor
+    secrets: inherit
+    with:
+      java-version: 25
+      java-vendor: temurin
+      publish-task: ':publishReleasePublicationToApexStudios-ReleasesRepository'
+      display-name: Registree
+      color: 0xeb052f

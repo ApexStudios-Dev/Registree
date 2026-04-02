@@ -1,0 +1,16 @@
+name: Upload PR
+
+on:
+  pull_request:
+    types:
+      - synchronize
+      - opened
+
+jobs:
+  upload-pr:
+    name: Upload PR
+    uses: ApexStudios-Dev/.github/.github/workflows/_upload-pr.yml@workflow-refactor
+    secrets: inherit
+    with:
+      java-version: 25
+      java-vendor: temurin
