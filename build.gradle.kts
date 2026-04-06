@@ -9,7 +9,7 @@ neoForge.version = libs.versions.neoforge.get()
 
 tasks.withType(Jar::class.java) {
     manifest {
-        attributes["FMLModType"] = neoForge.minecraftVersion
+        attributes["FMLModType"] = "GAMELIBRARY"
         attributes["Automatic-Module-Name"] = project.name.lowercase()
     }
 }
