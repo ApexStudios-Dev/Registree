@@ -7,14 +7,9 @@ plugins {
 group = "dev.apexstudios"
 neoForge.version = libs.versions.neoforge.get()
 
-repositories {
-}
-
-tasks.withType<Jar> {
+tasks.withType(Jar::class.java) {
     manifest {
-        attributes(
-            "FMLModType" to "GAMELIBRARY",
-            "Automatic-Module-Name" to "registree"
-        )
+        attributes["FMLModType"] = "GAMELIBRARY"
+        attributes["Automatic-Module-Name"] = project.name.lowercase()
     }
 }

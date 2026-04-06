@@ -6,6 +6,9 @@ on:
     branches: [ '**/main' ]
     paths: [ '**/src/**' ]
 
+permissions:
+  contents: read
+
 jobs:
   publish-library:
     uses: ApexStudios-Dev/.github/.github/workflows/_publish-library.yml@master
