@@ -18,3 +18,4 @@ jobs:
       java-version: 25
       java-vendor: temurin
       use-self-runner: false
+      build-task: ':build'
