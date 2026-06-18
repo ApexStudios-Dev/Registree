@@ -14,7 +14,7 @@ import net.minecraft.world.item.crafting.RecipeInput;
 import net.minecraft.world.item.crafting.RecipeMap;
 import net.minecraft.world.item.crafting.RecipeType;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public final class RecipeTypeBuilder<TRecipe extends Recipe<TInput>, TInput extends RecipeInput> extends AbstractBuilder<RecipeType<?>, RecipeType<TRecipe>, DeferredRecipeType<TRecipe>, RecipeTypeBuilder<TRecipe, TInput>> {
     private @Nullable RegistryEventHelper.RecipeSyncHandler syncHandler = null;

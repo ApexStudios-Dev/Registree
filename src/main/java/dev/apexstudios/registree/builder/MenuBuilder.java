@@ -15,7 +15,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.neoforged.fml.loading.FMLEnvironment;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public final class MenuBuilder<TMenu extends AbstractContainerMenu> extends AbstractBuilder<MenuType<?>, MenuType<TMenu>, DeferredMenu<TMenu>, MenuBuilder<TMenu>> {
     private final MenuType.MenuSupplier<TMenu> factory;

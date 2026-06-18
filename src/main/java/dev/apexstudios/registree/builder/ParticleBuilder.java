@@ -12,7 +12,7 @@ import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public final class ParticleBuilder<TParticleType extends ParticleType<TOptions>, TOptions extends ParticleOptions> extends AbstractBuilder<ParticleType<?>, TParticleType, DeferredParticle<TParticleType, TOptions>, ParticleBuilder<TParticleType, TOptions>> {
     private final Supplier<TParticleType> factory;
