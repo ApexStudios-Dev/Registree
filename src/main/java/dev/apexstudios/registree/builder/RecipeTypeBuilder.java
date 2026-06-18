@@ -17,7 +17,7 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
 
 public final class RecipeTypeBuilder<TRecipe extends Recipe<TInput>, TInput extends RecipeInput> extends AbstractBuilder<RecipeType<?>, RecipeType<TRecipe>, DeferredRecipeType<TRecipe>, RecipeTypeBuilder<TRecipe, TInput>> {
-    private @Nullable RegistryEventHelper.RecipeSyncHandler syncHandler = null;
+    private RegistryEventHelper.@Nullable RecipeSyncHandler syncHandler = null;
 
     @ApiStatus.Internal
     public RecipeTypeBuilder(BaseRegistree<?> registree, String identifier) {
