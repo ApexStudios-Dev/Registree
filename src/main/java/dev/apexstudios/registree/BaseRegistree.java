@@ -643,7 +643,3 @@ public class BaseRegistree<TSelf extends BaseRegistree<TSelf>> {
         }
     }
 }
-
-/*
-    RegisterCauldronFluidContentEvent
-*/
