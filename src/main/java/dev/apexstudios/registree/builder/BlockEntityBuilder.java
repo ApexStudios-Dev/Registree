@@ -5,8 +5,8 @@ import com.google.common.collect.MultimapBuilder;
 import dev.apexstudios.registree.BaseRegistree;
 import dev.apexstudios.registree.holder.DeferredBlockEntity;
 import dev.apexstudios.registree.holder.Holders;
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -23,10 +23,10 @@ import org.jspecify.annotations.Nullable;
 
 public final class BlockEntityBuilder<TBlockEntity extends BlockEntity> extends AbstractBuilder<BlockEntityType<?>, BlockEntityType<TBlockEntity>, DeferredBlockEntity<TBlockEntity>, BlockEntityBuilder<TBlockEntity>> {
     private final BlockEntityType.BlockEntitySupplier<TBlockEntity> factory;
-    private final List<Supplier<? extends Block>> validBlocks = new ArrayList<>();
+    private final List<Supplier<? extends Block>> validBlocks = new LinkedList<>();
     private boolean onlyOpCanSetNbt = false;
     private @Nullable Supplier<Supplier<BlockEntityRendererProvider<TBlockEntity, ?>>> rendererProvider = null;
-    private final Multimap<BlockCapability<?, ?>, ICapabilityProvider<TBlockEntity, ?, ?>> capabilities = MultimapBuilder.hashKeys().linkedListValues().build();
+    private final Multimap<BlockCapability<?, ?>, ICapabilityProvider<TBlockEntity, ?, ?>> capabilities = MultimapBuilder.linkedHashKeys().linkedListValues().build();
 
     @ApiStatus.Internal
     public BlockEntityBuilder(BaseRegistree<?> registree, String identifier, BlockEntityType.BlockEntitySupplier<TBlockEntity> factory) {

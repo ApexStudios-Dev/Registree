@@ -30,7 +30,7 @@ public final class EntityBuilder<TEntity extends Entity> extends AbstractBuilder
     private final MobCategory category;
     private Function<EntityType.Builder<TEntity>, EntityType.Builder<TEntity>> propertiesModifier = Function.identity();
     private @Nullable Supplier<Supplier<EntityRendererProvider<TEntity>>> rendererProvider = null;
-    private final Multimap<EntityCapability<?, ?>, ICapabilityProvider<TEntity, ?, ?>> capabilities = MultimapBuilder.hashKeys().linkedListValues().build();
+    private final Multimap<EntityCapability<?, ?>, ICapabilityProvider<TEntity, ?, ?>> capabilities = MultimapBuilder.linkedHashKeys().linkedListValues().build();
     private RegistryEventHelper.@Nullable SpawnPlacement<TEntity> spawnPlacement = null;
     private @Nullable Identifier spectatorShader = null;
 

@@ -1,9 +1,9 @@
 package dev.apexstudios.registree;
 
-import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
 import com.google.common.collect.Table;
+import com.google.common.collect.TreeBasedTable;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.ArgumentType;
@@ -27,8 +27,6 @@ import dev.apexstudios.registree.holder.DeferredRecipeSerializer;
 import dev.apexstudios.registree.holder.Holders;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -101,16 +99,16 @@ import org.jspecify.annotations.Nullable;
 public class BaseRegistree<TSelf extends BaseRegistree<TSelf>> {
     protected final String namespace;
 
-    private final Table<ResourceKey<? extends Registry<?>>, String, Function<Identifier, ?>> factories = HashBasedTable.create();
-    private final Table<ResourceKey<? extends Registry<?>>, String, ? super Holder.Reference<?>> holders = HashBasedTable.create();
-    private final Table<ResourceKey<? extends Registry<?>>, String, Object> values = HashBasedTable.create();
-    private final Multimap<ResourceKey<? extends Registry<?>>, Consumer<? extends Registry<?>>> listeners = MultimapBuilder.hashKeys().linkedListValues().build();
-    private final Set<ResourceKey<? extends Registry<?>>> registered = new HashSet<>();
+    private final Table<ResourceKey<? extends Registry<?>>, String, Function<Identifier, ?>> factories = TreeBasedTable.create();
+    private final Table<ResourceKey<? extends Registry<?>>, String, ? super Holder.Reference<?>> holders = TreeBasedTable.create();
+    private final Table<ResourceKey<? extends Registry<?>>, String, Object> values = TreeBasedTable.create();
+    private final Multimap<ResourceKey<? extends Registry<?>>, Consumer<? extends Registry<?>>> listeners = MultimapBuilder.linkedHashKeys().linkedListValues().build();
+    private final Set<ResourceKey<? extends Registry<?>>> registered = new LinkedHashSet<>();
     private @Nullable IEventBus modBus = null;
     private Consumer<IEventBus> deferredEvents = this::registerEvents;
-    private final Set<GameRuleCategory> gameRuleCategories = new HashSet<>();
-    private final Map<GameRuleType, GameRuleEntryFactory<?>> gameRuleEntryFactories = new HashMap<>();
-    private final Set<Registry<?>> registries = new HashSet<>();
+    private final Set<GameRuleCategory> gameRuleCategories = new LinkedHashSet<>();
+    private final Map<GameRuleType, GameRuleEntryFactory<?>> gameRuleEntryFactories = new LinkedHashMap<>();
+    private final Set<Registry<?>> registries = new LinkedHashSet<>();
     private final Map<String, DynamicRegistry<?>> dynamicRegistries = new LinkedHashMap<>();
     private final Set<DataMapType<?, ?>> dataMapTypes = new LinkedHashSet<>();
 

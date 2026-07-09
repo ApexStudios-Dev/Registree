@@ -4,7 +4,6 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
 import dev.apexstudios.registree.BaseRegistree;
 import dev.apexstudios.registree.holder.Holders;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -34,9 +33,9 @@ public final class ItemBuilder<TItem extends Item> extends AbstractBuilder<Item,
     private Supplier<Item.Properties> initialProperties = Item.Properties::new;
     private Function<Item.Properties, Item.Properties> propertiesModifier = Function.identity();
     private final Map<ResourceKey<CreativeModeTab>, RegistryEventHelper.CreativeModeTabAppender<TItem>> creativeModeTabs = new LinkedHashMap<>();
-    private final Map<Identifier, CauldronInteraction> cauldronInteractions = new HashMap<>();
+    private final Map<Identifier, CauldronInteraction> cauldronInteractions = new LinkedHashMap<>();
     private final List<CauldronInteraction> globalCauldronInteractions = new LinkedList<>();
-    private final Multimap<ItemCapability<?, ?>, ICapabilityProvider<ItemStack, ?, ?>> capabilities = MultimapBuilder.hashKeys().linkedListValues().build();
+    private final Multimap<ItemCapability<?, ?>, ICapabilityProvider<ItemStack, ?, ?>> capabilities = MultimapBuilder.linkedHashKeys().linkedListValues().build();
     private final List<IItemDecorator> decorators = new LinkedList<>();
     private @Nullable Supplier<Supplier<IClientItemExtensions>> clientExtension = null;
 
