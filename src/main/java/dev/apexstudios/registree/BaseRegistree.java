@@ -30,6 +30,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -92,6 +93,8 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.NewRegistryEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import net.neoforged.neoforge.registries.RegistryBuilder;
+import net.neoforged.neoforge.registries.datamaps.DataMapType;
+import net.neoforged.neoforge.registries.datamaps.RegisterDataMapTypesEvent;
 import org.apache.commons.lang3.function.Consumers;
 import org.jspecify.annotations.Nullable;
 
@@ -109,6 +112,7 @@ public class BaseRegistree<TSelf extends BaseRegistree<TSelf>> {
     private final Map<GameRuleType, GameRuleEntryFactory<?>> gameRuleEntryFactories = new HashMap<>();
     private final Set<Registry<?>> registries = new HashSet<>();
     private final Map<String, DynamicRegistry<?>> dynamicRegistries = new LinkedHashMap<>();
+    private final Set<DataMapType<?, ?>> dataMapTypes = new LinkedHashSet<>();
 
     protected BaseRegistree(String namespace) {
         this.namespace = namespace;
@@ -493,6 +497,23 @@ public class BaseRegistree<TSelf extends BaseRegistree<TSelf>> {
     }
     // endregion
 
+    // region DataMap
+    // exposed for future proofing, the builder maybe expanded in future to have more than just `.synced(Codec<TData>, boolean)`
+    public <TRegistry, TData> DataMapType<TRegistry, TData> dataMap(String identifier, ResourceKey<Registry<TRegistry>> registryType, Codec<TData> codec, UnaryOperator<DataMapType.Builder<TData, TRegistry>> action) {
+        var dataMapType = action.apply(DataMapType.builder(registryName(identifier), registryType, codec)).build();
+        dataMapTypes.add(dataMapType);
+        return dataMapType;
+    }
+
+    public <TRegistry, TData> DataMapType<TRegistry, TData> dataMap(String identifier, ResourceKey<Registry<TRegistry>> registryType, Codec<TData> codec) {
+        return dataMap(identifier, registryType, codec, UnaryOperator.identity());
+    }
+
+    public <TRegistry, TData> DataMapType<TRegistry, TData> dataMap(String identifier, ResourceKey<Registry<TRegistry>> registryType, Codec<TData> codec, Codec<TData> networkCodec, boolean mandatory) {
+        return dataMap(identifier, registryType, codec, builder -> builder.synced(networkCodec, mandatory));
+    }
+    // endregion
+
     // region Event
     @CanIgnoreReturnValue
     public <TEvent extends Event & IModBusEvent> TSelf event(Consumer<TEvent> action) {
@@ -537,6 +558,7 @@ public class BaseRegistree<TSelf extends BaseRegistree<TSelf>> {
         modBus.addListener(EventPriority.LOW, RegisterEvent.class, event -> notifyListeners(event.getRegistry()));
         modBus.addListener(RegisterGameRuleCategoryEvent.class, event -> gameRuleCategories.forEach(event::register));
         modBus.addListener(RegisterGameRuleEntryFactoryEvent.class, event -> gameRuleEntryFactories.forEach(event::register));
+        modBus.addListener(RegisterDataMapTypesEvent.class, event -> dataMapTypes.forEach(event::register));
         modBus.addListener(NewRegistryEvent.class, event -> registries.forEach(event::register));
 
         modBus.addListener(DataPackRegistryEvent.NewRegistry.class, event -> dynamicRegistries.forEach((identifier, registry) -> registry.register(
@@ -626,5 +648,4 @@ public class BaseRegistree<TSelf extends BaseRegistree<TSelf>> {
 
 /*
     RegisterCauldronFluidContentEvent
-    RegisterDataMapTypesEvent
 */
