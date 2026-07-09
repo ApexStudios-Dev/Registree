@@ -29,6 +29,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -86,8 +87,12 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterGameRuleCategoryEvent;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.registries.DataPackRegistryEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.NewRegistryEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
+import net.neoforged.neoforge.registries.RegistryBuilder;
+import org.apache.commons.lang3.function.Consumers;
 import org.jspecify.annotations.Nullable;
 
 public class BaseRegistree<TSelf extends BaseRegistree<TSelf>> {
@@ -102,6 +107,8 @@ public class BaseRegistree<TSelf extends BaseRegistree<TSelf>> {
     private Consumer<IEventBus> deferredEvents = this::registerEvents;
     private final Set<GameRuleCategory> gameRuleCategories = new HashSet<>();
     private final Map<GameRuleType, GameRuleEntryFactory<?>> gameRuleEntryFactories = new HashMap<>();
+    private final Set<Registry<?>> registries = new HashSet<>();
+    private final Map<String, DynamicRegistry<?>> dynamicRegistries = new LinkedHashMap<>();
 
     protected BaseRegistree(String namespace) {
         this.namespace = namespace;
@@ -448,6 +455,44 @@ public class BaseRegistree<TSelf extends BaseRegistree<TSelf>> {
     }
     // endregion
 
+    // region Registry
+    public <TRegistry> Registry<TRegistry> newRegistry(String identifier, Consumer<RegistryBuilder<TRegistry>> action) {
+        var builder = new RegistryBuilder<TRegistry>(ResourceKey.createRegistryKey(registryName(identifier)));
+        action.accept(builder);
+        var registry = builder.create();
+        registries.add(registry);
+        return registry;
+    }
+
+    public <TRegistry> Registry<TRegistry> newRegistry(String identifier) {
+        return newRegistry(identifier, Consumers.nop());
+    }
+
+    private <TRegistry> ResourceKey<Registry<TRegistry>> newDynamicRegistry(String identifier, DynamicRegistry<TRegistry> data) {
+        if(dynamicRegistries.putIfAbsent(identifier, data) != null) {
+            throw new IllegalStateException("Duplicate DynamicRegistry definition: " + registryName(identifier));
+        }
+
+        return ResourceKey.createRegistryKey(registryName(identifier));
+    }
+
+    public <TRegistry> ResourceKey<Registry<TRegistry>> newDynamicRegistry(String identifier, Codec<TRegistry> codec, Codec<TRegistry> networkCodec, Consumer<RegistryBuilder<TRegistry>> action) {
+        return newDynamicRegistry(identifier, new DynamicRegistry<>(codec, networkCodec, action));
+    }
+
+    public <TRegistry> ResourceKey<Registry<TRegistry>> newDynamicRegistry(String identifier, Codec<TRegistry> codec, Codec<TRegistry> networkCodec) {
+        return newDynamicRegistry(identifier, codec, networkCodec, Consumers.nop());
+    }
+
+    public <TRegistry> ResourceKey<Registry<TRegistry>> newDynamicRegistry(String identifier, Codec<TRegistry> codec, Consumer<RegistryBuilder<TRegistry>> action) {
+        return newDynamicRegistry(identifier, new DynamicRegistry<>(codec, null, action));
+    }
+
+    public <TRegistry> ResourceKey<Registry<TRegistry>> newDynamicRegistry(String identifier, Codec<TRegistry> codec) {
+        return newDynamicRegistry(identifier, codec, Consumers.nop());
+    }
+    // endregion
+
     // region Event
     @CanIgnoreReturnValue
     public <TEvent extends Event & IModBusEvent> TSelf event(Consumer<TEvent> action) {
@@ -490,14 +535,14 @@ public class BaseRegistree<TSelf extends BaseRegistree<TSelf>> {
     private void registerEvents(IEventBus modBus) {
         modBus.addListener(EventPriority.HIGH, RegisterEvent.class, event -> register(event.getRegistry()));
         modBus.addListener(EventPriority.LOW, RegisterEvent.class, event -> notifyListeners(event.getRegistry()));
+        modBus.addListener(RegisterGameRuleCategoryEvent.class, event -> gameRuleCategories.forEach(event::register));
+        modBus.addListener(RegisterGameRuleEntryFactoryEvent.class, event -> gameRuleEntryFactories.forEach(event::register));
+        modBus.addListener(NewRegistryEvent.class, event -> registries.forEach(event::register));
 
-        if(!gameRuleCategories.isEmpty()) {
-            modBus.addListener(RegisterGameRuleCategoryEvent.class, event -> gameRuleCategories.forEach(event::register));
-        }
-
-        if(!gameRuleEntryFactories.isEmpty()) {
-            modBus.addListener(RegisterGameRuleEntryFactoryEvent.class, event -> gameRuleEntryFactories.forEach(event::register));
-        }
+        modBus.addListener(DataPackRegistryEvent.NewRegistry.class, event -> dynamicRegistries.forEach((identifier, registry) -> registry.register(
+                event,
+                ResourceKey.createRegistryKey(registryName(identifier))
+        )));
 
         NeoForge.EVENT_BUS.addListener(this::appendTooltips);
     }
@@ -562,11 +607,24 @@ public class BaseRegistree<TSelf extends BaseRegistree<TSelf>> {
     public static <TRegistry> Registry<TRegistry> getRegistry(ResourceKey<? extends Registry<TRegistry>> registryType) {
         return (Registry<TRegistry>) BuiltInRegistries.REGISTRY.getValueOrThrow((ResourceKey) registryType);
     }
+
+    record DynamicRegistry<TRegistry>(
+            Codec<TRegistry> codec,
+            @Nullable Codec<TRegistry> networkRegistry,
+            Consumer<RegistryBuilder<TRegistry>> action
+    ) {
+        private void register(DataPackRegistryEvent.NewRegistry event, ResourceKey<Registry<TRegistry>> registryType) {
+            event.dataPackRegistry(
+                    registryType,
+                    codec,
+                    networkRegistry,
+                    action
+            );
+        }
+    }
 }
 
 /*
     RegisterCauldronFluidContentEvent
     RegisterDataMapTypesEvent
-    DataPackRegistryEvent
-    NewRegistryEvent
 */
