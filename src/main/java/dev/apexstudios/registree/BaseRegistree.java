@@ -42,7 +42,6 @@ import java.util.stream.Stream;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponentType;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;
@@ -61,7 +60,6 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.component.TooltipProvider;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeBookCategory;
@@ -604,9 +602,7 @@ public class BaseRegistree<TSelf extends BaseRegistree<TSelf>> {
         var context = event.getContext();
         var flags = event.getFlags();
         var tooltip = event.getToolTip();
-
-        // TODO: Neo should provide a getter for this in the event as it may be a different value than whats stored on the stack
-        var display = stack.getOrDefault(DataComponents.TOOLTIP_DISPLAY, TooltipDisplay.DEFAULT);
+        var display = event.getDisplay();
 
         for(var component : components) {
             var value = stack.get(component);
