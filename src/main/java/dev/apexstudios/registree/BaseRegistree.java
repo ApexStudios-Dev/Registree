@@ -60,7 +60,6 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.component.TooltipProvider;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeBookCategory;
 import net.minecraft.world.item.crafting.RecipeInput;
@@ -80,9 +79,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.event.IModBusEvent;
 import net.neoforged.neoforge.client.gamerules.GameRuleEntryFactory;
 import net.neoforged.neoforge.client.gamerules.RegisterGameRuleEntryFactoryEvent;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterGameRuleCategoryEvent;
-import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.registries.DataPackRegistryEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -561,8 +558,6 @@ public class BaseRegistree<TSelf extends BaseRegistree<TSelf>> {
                 event,
                 ResourceKey.createRegistryKey(registryName(identifier))
         )));
-
-        NeoForge.EVENT_BUS.addListener(this::appendTooltips);
     }
 
     @SuppressWarnings("unchecked")
@@ -589,28 +584,6 @@ public class BaseRegistree<TSelf extends BaseRegistree<TSelf>> {
         var registryType = registry.key();
         listeners.removeAll(registryType).forEach(listener -> ((Consumer<Registry<TRegistry>>) listener).accept(registry));
         registered.add(registryType);
-    }
-
-    private void appendTooltips(ItemTooltipEvent event) {
-        var components = getValues(Registries.DATA_COMPONENT_TYPE);
-
-        if(components.isEmpty()) {
-            return;
-        }
-
-        var stack = event.getItemStack();
-        var context = event.getContext();
-        var flags = event.getFlags();
-        var tooltip = event.getToolTip();
-        var display = event.getDisplay();
-
-        for(var component : components) {
-            var value = stack.get(component);
-
-            if(value instanceof TooltipProvider provider && display.shows(component)) {
-                provider.addToTooltip(context, tooltip::add, flags, stack);
-            }
-        }
     }
 
     @SuppressWarnings("unchecked")
