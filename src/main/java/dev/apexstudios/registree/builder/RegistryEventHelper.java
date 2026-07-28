@@ -16,8 +16,10 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.SpawnPlacementType;
 import net.minecraft.world.entity.SpawnPlacements;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.village.poi.PoiType;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
@@ -46,6 +48,7 @@ import net.neoforged.neoforge.event.BlockEntityTypeAddBlocksEvent;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.event.RegisterCauldronInteractionEvent;
+import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
 import net.neoforged.neoforge.event.level.GameRuleChangedEvent;
 import net.neoforged.neoforge.mixins.BlockEntityTypeAccessor;
@@ -132,6 +135,20 @@ public interface RegistryEventHelper {
         }
 
         registree.event(RegisterSpawnPlacementsEvent.class, event -> event.register(entityType.get(), spawnPlacement.type, spawnPlacement.heightmap, spawnPlacement.predicate, RegisterSpawnPlacementsEvent.Operation.REPLACE));
+    }
+
+    static <TEntity extends LivingEntity> void registerEntityAttributes(BaseRegistree<?> registree, Supplier<EntityType<TEntity>> entityType, @Nullable Supplier<@Nullable AttributeSupplier> attributesFactory) {
+        if(attributesFactory == null) {
+            return;
+        }
+
+        registree.event(EntityAttributeCreationEvent.class, event -> {
+            var attributes = attributesFactory.get();
+
+            if(attributes != null) {
+                event.put(entityType.get(), attributes);
+            }
+        });
     }
 
     static <TRuleType> void registerGameRuleChanged(Supplier<GameRule<TRuleType>> gameRule, @Nullable GameRuleListener<TRuleType> listener) {

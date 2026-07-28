@@ -14,10 +14,12 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.SpawnPlacementType;
 import net.minecraft.world.entity.SpawnPlacementTypes;
 import net.minecraft.world.entity.SpawnPlacements;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.capabilities.EntityCapability;
@@ -33,6 +35,7 @@ public final class EntityBuilder<TEntity extends Entity> extends AbstractBuilder
     private final Multimap<EntityCapability<?, ?>, ICapabilityProvider<TEntity, ?, ?>> capabilities = MultimapBuilder.linkedHashKeys().linkedListValues().build();
     private RegistryEventHelper.@Nullable SpawnPlacement<TEntity> spawnPlacement = null;
     private @Nullable Identifier spectatorShader = null;
+    private @Nullable Supplier<AttributeSupplier> attributes = null;
 
     @ApiStatus.Internal
     public EntityBuilder(BaseRegistree<?> registree, String identifier, EntityType.EntityFactory<TEntity> factory, MobCategory category) {
@@ -87,17 +90,37 @@ public final class EntityBuilder<TEntity extends Entity> extends AbstractBuilder
         return spectatorShader(identifier);
     }
 
+    // registered entity must be a LivingEntity
+    public EntityBuilder<TEntity> attributes(Supplier<AttributeSupplier> attributes) {
+        this.attributes = attributes;
+        return this;
+    }
+
+    public EntityBuilder<TEntity> attributes(AttributeSupplier attributes) {
+        return attributes(() -> attributes);
+    }
+
+    public EntityBuilder<TEntity> attributeBuilder(Supplier<AttributeSupplier.Builder> attributes) {
+        return attributes(() -> attributes.get().build());
+    }
+
+    public EntityBuilder<TEntity> attributeBuilder(AttributeSupplier.Builder attributes) {
+        return attributeBuilder(() -> attributes);
+    }
+
     @Override
     protected EntityType<TEntity> createValue(ResourceKey<EntityType<?>> registryKey) {
         return propertiesModifier.apply(EntityType.Builder.of(factory, category)).build(registryKey);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected void registerEvents() {
         super.registerEvents();
 
         RegistryEventHelper.registerEntityCapabilities(registree, this::value, capabilities);
         RegistryEventHelper.registerEntitySpawnPlacement(registree, this::value, spawnPlacement);
+        RegistryEventHelper.registerEntityAttributes(registree, () -> (EntityType<LivingEntity>) value(), attributes);
 
         if(FMLEnvironment.getDist().isClient()) {
             RegistryClientEventHelper.registerEntityRenderer(registree, this::value, rendererProvider);
