@@ -19,7 +19,7 @@ pluginManagement {
 
 dependencyResolutionManagement {
     versionCatalogs.create("libs") {
-        version("neoforge", "26.2.0.211-pr-3403-port-26.3")
+        version("neoforge", "26.3.0.0-beta")
     }
 }
 
