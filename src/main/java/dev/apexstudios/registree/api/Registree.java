@@ -203,7 +203,7 @@ public interface Registree {
             }
 
             @Override
-            public boolean canSerializeIn(HolderOwner<TRegistry> owner) {
+            public boolean canSerialize(HolderOwner<TRegistry> owner) {
                 return false;
             }
         };
