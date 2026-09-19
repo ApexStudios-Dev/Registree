@@ -84,6 +84,7 @@ public class SimpleRegistree implements Registree {
         this.namespace = namespace;
     }
 
+    @SuppressWarnings("DataFlowIssue")
     @Override
     public final void registerEvents(IEventBus modBus) {
         if(this.modBus != null)
@@ -91,7 +92,7 @@ public class SimpleRegistree implements Registree {
 
         modBus.addListener(RegisterEvent.class, event -> register(event.getRegistry()));
         modBus.addListener(EventPriority.LOW, RegisterEvent.class, event -> invokeListeners(event.getRegistry()));
-        modBus.addListener(EventPriority.LOWEST, RegisterEvent.class, event -> frozen = true);
+        modBus.addListener(EventPriority.LOWEST, RegisterEvent.class, _ -> frozen = true);
         delayedEventRegistration.accept(modBus);
         delayedEventRegistration = null;
         this.modBus = modBus;
@@ -104,6 +105,7 @@ public class SimpleRegistree implements Registree {
             consumer.accept(modBus);
     }
 
+    @SuppressWarnings("unchecked")
     private <TRegistry> void register(Registry<TRegistry> registry) {
         var registryType = registry.key();
 
@@ -117,6 +119,7 @@ public class SimpleRegistree implements Registree {
         });
     }
 
+    @SuppressWarnings("unchecked")
     private <TRegistry> void invokeListeners(Registry<TRegistry> registry) {
         var registryType = registry.key();
 
@@ -125,9 +128,7 @@ public class SimpleRegistree implements Registree {
         if(!finalized.add(registryType))
             throw new IllegalStateException("Duplicate registry finalization: " + namespace + '#' + registryType.identifier());
 
-        listeners.row(registryType).forEach((registryName, listener) -> {
-            getOptional(registryType, registryName).ifPresent((Consumer<? super TRegistry>) listener);
-        });
+        listeners.row(registryType).forEach((registryName, listener) -> getOptional(registryType, registryName).ifPresent((Consumer<? super TRegistry>) listener));
     }
 
     @Override
@@ -140,11 +141,13 @@ public class SimpleRegistree implements Registree {
         return holders.rowKeySet().stream();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public final <TRegistry> Optional<Holder.Reference<TRegistry>> get(ResourceKey<? extends Registry<TRegistry>> registryType, String registryName) {
         return Optional.ofNullable((Holder.Reference<TRegistry>) holders.get(registryType, registryName));
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public final <TRegistry> Stream<Holder.Reference<TRegistry>> listElements(ResourceKey<? extends Registry<TRegistry>> registryType) {
         return holders.row(registryType).values().stream().map(holder -> (Holder.Reference<TRegistry>) holder);
@@ -416,11 +419,13 @@ public class SimpleRegistree implements Registree {
         return Registree.super.registerSimpleBlock(registryName, properties);
     }
 
+    @SafeVarargs
     @Override
     public final <TBlockEntity extends BlockEntity> DeferredBlockEntity<TBlockEntity> registerBlockEntity(String registryName, BlockEntityType.BlockEntitySupplier<TBlockEntity> factory, Supplier<? extends Block>... validBlocks) {
         return Registree.super.registerBlockEntity(registryName, factory, validBlocks);
     }
 
+    @SafeVarargs
     @Override
     public final <TBlockEntity extends BlockEntity> DeferredBlockEntity<TBlockEntity> registerBlockEntity(DeferredHolder<Block, ?> block, BlockEntityType.BlockEntitySupplier<TBlockEntity> factory, Supplier<? extends Block>... validBlocks) {
         return Registree.super.registerBlockEntity(block, factory, validBlocks);
