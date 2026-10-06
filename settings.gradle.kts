@@ -10,7 +10,7 @@ pluginManagement {
         resolutionStrategy {
             eachPlugin {
                 if(requested.id.namespace == "apex-conventions") {
-                    useVersion("0.1.102")
+                    useVersion("0.1.103")
                 }
             }
         }
