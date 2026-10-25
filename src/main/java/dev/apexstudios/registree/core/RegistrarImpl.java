@@ -57,7 +57,7 @@ final class RegistrarImpl<TRegistry> implements Registrar<TRegistry> {
     }
 
     @Override
-    public Collection<? extends TRegistry> values() {
+    public Collection<TRegistry> values() {
         return Collections.unmodifiableCollection(valueById.values());
     }
 

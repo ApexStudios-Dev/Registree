@@ -45,7 +45,7 @@ public interface Registrar<TRegistry> {
         return Objects.requireNonNull(getValueOrNull(identifier));
     }
 
-    default Optional<? extends TRegistry> getValue(String identifier) {
+    default Optional<TRegistry> getValue(String identifier) {
         return Optional.ofNullable(getValueOrNull(identifier));
     }
 
@@ -53,13 +53,13 @@ public interface Registrar<TRegistry> {
         return holders().stream();
     }
 
-    default Stream<? extends TRegistry> streamValues() {
+    default Stream<TRegistry> streamValues() {
         return values().stream();
     }
 
     Collection<Holder.Reference<TRegistry>> holders();
 
-    Collection<? extends TRegistry> values();
+    Collection<TRegistry> values();
 
     Set<String> keys();
 
