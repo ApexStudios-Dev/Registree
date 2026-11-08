@@ -31,16 +31,16 @@ public interface ItemRegistrations {
         return register(registree, identifier, factory, UnaryOperator.identity());
     }
 
-    static DeferredItem<Item> register(Registree registree, String identifier, Supplier<Item.Properties> initialProperties, UnaryOperator<Item.Properties> propertiesModifier) {
+    static DeferredItem<Item> registerSimple(Registree registree, String identifier, Supplier<Item.Properties> initialProperties, UnaryOperator<Item.Properties> propertiesModifier) {
         return register(registree, identifier, Item::new, initialProperties, propertiesModifier);
     }
 
-    static DeferredItem<Item> register(Registree registree, String identifier, UnaryOperator<Item.Properties> propertiesModifier) {
-        return register(registree, identifier, Item.Properties::new, propertiesModifier);
+    static DeferredItem<Item> registerSimple(Registree registree, String identifier, UnaryOperator<Item.Properties> propertiesModifier) {
+        return registerSimple(registree, identifier, Item.Properties::new, propertiesModifier);
     }
 
-    static DeferredItem<Item> register(Registree registree, String identifier) {
-        return register(registree, identifier, UnaryOperator.identity());
+    static DeferredItem<Item> registerSimple(Registree registree, String identifier) {
+        return registerSimple(registree, identifier, UnaryOperator.identity());
     }
 
     static <TItem extends Item, TBlock extends Block> DeferredItem<TItem> registerForBlock(Registree registree, String identifier, Supplier<TBlock> block, BiFunction<TBlock, Item.Properties, TItem> factory, Supplier<Item.Properties> initialProperties, UnaryOperator<Item.Properties> propertiesModifier) {
@@ -61,16 +61,16 @@ public interface ItemRegistrations {
         return registerForBlock(registree, identifier, block, factory, UnaryOperator.identity());
     }
 
-    static DeferredItem<BlockItem> registerForBlock(Registree registree, String identifier, Supplier<? extends Block> block, Supplier<Item.Properties> initialProperties, UnaryOperator<Item.Properties> propertiesModifier) {
+    static DeferredItem<BlockItem> registerSimpleForBlock(Registree registree, String identifier, Supplier<? extends Block> block, Supplier<Item.Properties> initialProperties, UnaryOperator<Item.Properties> propertiesModifier) {
         return registerForBlock(registree, identifier, block, BlockItem::new, initialProperties, propertiesModifier);
     }
 
-    static DeferredItem<BlockItem> registerForBlock(Registree registree, String identifier, Supplier<? extends Block> block, UnaryOperator<Item.Properties> propertiesModifier) {
-        return registerForBlock(registree, identifier, block, Item.Properties::new, propertiesModifier);
+    static DeferredItem<BlockItem> registerSimpleForBlock(Registree registree, String identifier, Supplier<? extends Block> block, UnaryOperator<Item.Properties> propertiesModifier) {
+        return registerSimpleForBlock(registree, identifier, block, Item.Properties::new, propertiesModifier);
     }
 
-    static DeferredItem<BlockItem> registerForBlock(Registree registree, String identifier, Supplier<? extends Block> block) {
-        return registerForBlock(registree, identifier, block, UnaryOperator.identity());
+    static DeferredItem<BlockItem> registerSimpleForBlock(Registree registree, String identifier, Supplier<? extends Block> block) {
+        return registerSimpleForBlock(registree, identifier, block, UnaryOperator.identity());
     }
 
     static <TItem extends Item, TBlock extends Block> DeferredItem<TItem> registerForBlock(Registree registree, DeferredHolder<Block, TBlock> block, BiFunction<TBlock, Item.Properties, TItem> factory, Supplier<Item.Properties> initialProperties, UnaryOperator<Item.Properties> propertiesModifier) {
@@ -85,15 +85,15 @@ public interface ItemRegistrations {
         return registerForBlock(registree, block, factory, UnaryOperator.identity());
     }
 
-    static DeferredItem<BlockItem> registerForBlock(Registree registree, DeferredHolder<Block, ? extends Block> block, Supplier<Item.Properties> initialProperties, UnaryOperator<Item.Properties> propertiesModifier) {
+    static DeferredItem<BlockItem> registerSimpleForBlock(Registree registree, DeferredHolder<Block, ? extends Block> block, Supplier<Item.Properties> initialProperties, UnaryOperator<Item.Properties> propertiesModifier) {
         return registerForBlock(registree, block, BlockItem::new, initialProperties, propertiesModifier);
     }
 
-    static DeferredItem<BlockItem> registerForBlock(Registree registree, DeferredHolder<Block, ? extends Block> block, UnaryOperator<Item.Properties> propertiesModifier) {
-        return registerForBlock(registree, block, Item.Properties::new, propertiesModifier);
+    static DeferredItem<BlockItem> registerSimpleForBlock(Registree registree, DeferredHolder<Block, ? extends Block> block, UnaryOperator<Item.Properties> propertiesModifier) {
+        return registerSimpleForBlock(registree, block, Item.Properties::new, propertiesModifier);
     }
 
-    static DeferredItem<BlockItem> registerForBlock(Registree registree, DeferredHolder<Block, ? extends Block> block) {
-        return registerForBlock(registree, block, UnaryOperator.identity());
+    static DeferredItem<BlockItem> registerSimpleForBlock(Registree registree, DeferredHolder<Block, ? extends Block> block) {
+        return registerSimpleForBlock(registree, block, UnaryOperator.identity());
     }
 }

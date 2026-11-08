@@ -22,15 +22,15 @@ public interface BlockRegistrations {
         return register(registree, identifier, factory, UnaryOperator.identity());
     }
 
-    static DeferredBlock<Block> register(Registree registree, String identifier, Supplier<BlockBehaviour.Properties> initialProperties, UnaryOperator<BlockBehaviour.Properties> propertiesModifier) {
+    static DeferredBlock<Block> registerSimple(Registree registree, String identifier, Supplier<BlockBehaviour.Properties> initialProperties, UnaryOperator<BlockBehaviour.Properties> propertiesModifier) {
         return register(registree, identifier, Block::new, initialProperties, propertiesModifier);
     }
 
-    static DeferredBlock<Block> register(Registree registree, String identifier, UnaryOperator<BlockBehaviour.Properties> propertiesModifier) {
-        return register(registree, identifier, BlockBehaviour.Properties::of, propertiesModifier);
+    static DeferredBlock<Block> registerSimple(Registree registree, String identifier, UnaryOperator<BlockBehaviour.Properties> propertiesModifier) {
+        return registerSimple(registree, identifier, BlockBehaviour.Properties::of, propertiesModifier);
     }
 
-    static DeferredBlock<Block> register(Registree registree, String identifier) {
-        return register(registree, identifier, UnaryOperator.identity());
+    static DeferredBlock<Block> registerSimple(Registree registree, String identifier) {
+        return registerSimple(registree, identifier, UnaryOperator.identity());
     }
 }
